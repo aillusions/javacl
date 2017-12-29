@@ -14,6 +14,7 @@ import java.util.Arrays;
 public class TestAparapi extends TestCase {
 
     static final int arraySize = Integer.MAX_VALUE / 50;
+    final int iterations = 50;
 
     static final float inA_gl[] = new float[arraySize];
     static final float inB_gl[] = new float[arraySize];
@@ -33,8 +34,10 @@ public class TestAparapi extends TestCase {
         final float inB[] = inB_gl;
         final float[] result = new float[arraySize];
 
-        for (int i = 0; i < result.length; i++) {
-            result[i] = inA[i] + inB[i];
+        for (int j = 0; j < iterations; j++) {
+            for (int i = 0; i < result.length; i++) {
+                result[i] = inA[i] + inB[i];
+            }
         }
 
         System.out.println("testCPU: in " + (System.currentTimeMillis() - start) + " ms (" + result.length + " items)");
@@ -58,7 +61,9 @@ public class TestAparapi extends TestCase {
         };
 
         Range range = Range.create(result.length);
-        kernel.execute(range);
+        for (int j = 0; j < iterations; j++) {
+            kernel.execute(range);
+        }
 
         System.out.println("testGpu: in " + (System.currentTimeMillis() - start) + " ms (" + result.length + " items)");
     }
