@@ -2,6 +2,7 @@ package com.aillusions;
 
 import com.aparapi.Kernel;
 import com.aparapi.Range;
+import com.aparapi.device.OpenCLDevice;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -60,7 +61,10 @@ public class TestAparapi extends TestCase {
             }
         };
 
-        Range range = Range.create(result.length);
+        Range range = OpenCLDevice.bestGPU().createRange(result.length);
+        // Range range = JavaDevice.THREAD_POOL.createRange(result.length);
+        // Range range = Range.create(result.length);
+
         for (int j = 0; j < iterations; j++) {
             kernel.execute(range);
         }
