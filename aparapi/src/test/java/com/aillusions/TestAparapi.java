@@ -2,13 +2,18 @@ package com.aillusions;
 
 import com.aparapi.Kernel;
 import com.aparapi.Range;
+import com.aparapi.device.Device;
 import com.aparapi.device.OpenCLDevice;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
 
 /**
+ * http://aparapi.com/introduction/getting-started.html
+ * <p>
  * -Xmx10g
+ * -Dcom.aparapi.enableShowGeneratedOpenCL=true
+ * –Dcom.aparapi.enableShowExecutionModes=true
  *
  * @author aillusions
  */
@@ -61,6 +66,8 @@ public class TestAparapi extends TestCase {
             }
         };
 
+        Device device = Device.best();
+
         Range range = OpenCLDevice.bestGPU().createRange(result.length);
         // Range range = JavaDevice.THREAD_POOL.createRange(result.length);
         // Range range = Range.create(result.length);
@@ -68,6 +75,12 @@ public class TestAparapi extends TestCase {
         for (int j = 0; j < iterations; j++) {
             kernel.execute(range);
         }
+
+        //System.out.println("Execution mode = " + kernel.getExecutionMode());
+
+        // if (!kernel.getExecutionMode().equals(Kernel.EXECUTION_MODE.GPU)) {
+        //    System.out.println("Kernel did not execute on the GPU!");
+        // }
 
         System.out.println("testGpu: in " + (System.currentTimeMillis() - start) + " ms (" + result.length + " items)");
     }
