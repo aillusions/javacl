@@ -13,8 +13,8 @@ import java.util.Arrays;
  */
 public class TestAparapi extends TestCase {
 
-    static final int arraySize = Integer.MAX_VALUE / 50;
-    final int iterations = 50;
+    static final int arraySize = Integer.MAX_VALUE / 5000;
+    final int iterations = 1;
 
     static final float inA_gl[] = new float[arraySize];
     static final float inB_gl[] = new float[arraySize];
@@ -36,7 +36,7 @@ public class TestAparapi extends TestCase {
 
         for (int j = 0; j < iterations; j++) {
             for (int i = 0; i < result.length; i++) {
-                result[i] = inA[i] + inB[i];
+                result[i] = (float) (Math.cos(Math.sin(inA[i])) + Math.sin(Math.cos(inB[i])));
             }
         }
 
@@ -56,7 +56,7 @@ public class TestAparapi extends TestCase {
             @Override
             public void run() {
                 int i = getGlobalId();
-                result[i] = inA[i] + inB[i];
+                result[i] = (float) (Math.cos(Math.sin(inA[i])) + Math.sin(Math.cos(inB[i])));
             }
         };
 
