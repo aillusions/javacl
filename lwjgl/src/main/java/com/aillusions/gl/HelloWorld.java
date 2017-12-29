@@ -1,4 +1,4 @@
-package com.aillusions;
+package com.aillusions.gl;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;

@@ -2,7 +2,7 @@
  * Copyright LWJGL. All rights reserved.
  * License terms: https://www.lwjgl.org/license
  */
-package com.aillusions;
+package com.aillusions.cl.demo;
 
 import org.lwjgl.*;
 import org.lwjgl.opencl.*;
@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opencl.CL11.*;
-import static com.aillusions.InfoUtil.*;
+import static com.aillusions.cl.demo.InfoUtil.*;
 import static org.lwjgl.opencl.KHRICD.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
