@@ -13,9 +13,9 @@ addr_all.bin
 .springBeans
 
 ### IntelliJ IDEA ###
-.idea
+#.idea
 *.iws
-*.iml
+#*.iml
 *.ipr
 
 ### NetBeans ###
