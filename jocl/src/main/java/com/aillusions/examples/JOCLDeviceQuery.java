@@ -1,4 +1,4 @@
-package com.aillusions;
+package com.aillusions.examples;
 
 /**
  * @author aillusions
