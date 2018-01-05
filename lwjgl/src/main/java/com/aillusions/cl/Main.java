@@ -1,10 +1,13 @@
 package com.aillusions.cl;
 
-import com.aillusions.cl.device.UsefulDevice;
 import com.aillusions.cl.device.OpenCLDeviceProvider;
+import com.aillusions.cl.device.UsefulDevice;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.*;
+import org.lwjgl.opencl.CLBufferRegion;
+import org.lwjgl.opencl.CLEventCallback;
+import org.lwjgl.opencl.CLMemObjectDestructorCallback;
+import org.lwjgl.opencl.CLNativeKernel;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
@@ -15,7 +18,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static com.aillusions.cl.demo.CLDemo.getEventStatusName;
-import static com.aillusions.cl.demo.InfoUtil.*;
+import static com.aillusions.cl.demo.IOUtil.ioResourceToByteBuffer;
+import static com.aillusions.cl.demo.InfoUtil.checkCLError;
+import static com.aillusions.cl.demo.InfoUtil.getDeviceInfoLong;
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opencl.CL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -35,13 +40,12 @@ public class Main {
     }
 
     public static void main(String... args) throws IOException {
-
         try (MemoryStack stack = stackPush()) {
             demo(stack);
         }
     }
 
-    private static void demo(MemoryStack stack) {
+    private static void demo(MemoryStack stack) throws IOException {
 
         IntBuffer errcode_ret = stack.callocInt(1);
 
@@ -53,10 +57,27 @@ public class Main {
             System.out.println("Useful device: " + usDev.toString());
         }
 
-        allocateBuffer(errcode_ret, usDev);
-        executeNativeKernel(errcode_ret, usDev);
+        executeKernel(errcode_ret, usDev);
+        //allocateBuffer(errcode_ret, usDev);
+        //executeNativeKernel(errcode_ret, usDev);
 
         usDev.clear();
+    }
+
+    public static void executeKernel(IntBuffer errcode_ret, UsefulDevice usDev) throws IOException {
+
+        long context = usDev.getContext();
+
+        PointerBuffer strings = BufferUtils.createPointerBuffer(1);
+        PointerBuffer lengths = BufferUtils.createPointerBuffer(1);
+
+        ByteBuffer source = ioResourceToByteBuffer("OpenCLSum.cl", 4096);
+        strings.put(0, source);
+        lengths.put(0, source.remaining());
+
+        long clProgram = clCreateProgramWithSource(context, strings, lengths, errcode_ret);
+        checkCLError(errcode_ret);
+
     }
 
     public static void allocateBuffer(IntBuffer errcode_ret, UsefulDevice usDev) {
