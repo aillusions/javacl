@@ -1,5 +1,6 @@
 package com.aillusions.cl;
 
+import com.aillusions.cl.demo.UsefulDevice;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
 import org.lwjgl.system.Configuration;
@@ -31,6 +32,116 @@ public class Main {
     }
 
     private static void demo(MemoryStack stack) {
+
+        IntBuffer errcode_ret = stack.callocInt(1);
+
+        UsefulDevice usDev = getUsefulDevice(stack);
+        long device = usDev.getDevice();
+        String deviceName = usDev.getDeviceName();
+        PointerBuffer ctxProps = usDev.getCtxProps();
+
+        printDeviceInfo(device, deviceName + " -->> CL_DEVICE_OPENCL_C_VERSION", CL_DEVICE_OPENCL_C_VERSION);
+
+        CLContextCallback contextCB;
+        long context = clCreateContext(ctxProps, device, contextCB = CLContextCallback.create((errinfo, private_info, cb, user_data) -> {
+            System.err.println("[LWJGL] cl_context_callback");
+            System.err.println("\tInfo: " + memUTF8(errinfo));
+        }), MemoryUtil.NULL, errcode_ret);
+        checkCLError(errcode_ret);
+
+        long buffer = clCreateBuffer(context, CL_MEM_READ_ONLY, 128000000, errcode_ret);
+        checkCLError(errcode_ret);
+
+        CLMemObjectDestructorCallback bufferCB1;
+        CLMemObjectDestructorCallback bufferCB2;
+
+        long subbuffer;
+
+        CLMemObjectDestructorCallback subbufferCB;
+
+        int errcode;
+
+        CountDownLatch destructorLatch;
+
+        destructorLatch = new CountDownLatch(3);
+
+        errcode = clSetMemObjectDestructorCallback(buffer, bufferCB1 = CLMemObjectDestructorCallback.create((memobj, user_data) -> {
+            System.out.println("\t\tBuffer destructed (1): " + memobj);
+            destructorLatch.countDown();
+        }), NULL);
+        checkCLError(errcode);
+
+        errcode = clSetMemObjectDestructorCallback(buffer, bufferCB2 = CLMemObjectDestructorCallback.create((memobj, user_data) -> {
+            System.out.println("\t\tBuffer destructed (2): " + memobj);
+            destructorLatch.countDown();
+        }), NULL);
+        checkCLError(errcode);
+
+        try (CLBufferRegion buffer_region = CLBufferRegion.malloc()) {
+            buffer_region.origin(0);
+            buffer_region.size(64000000);
+
+            subbuffer = nclCreateSubBuffer(buffer,
+                    CL_MEM_READ_ONLY,
+                    CL_BUFFER_CREATE_TYPE_REGION,
+                    buffer_region.address(),
+                    memAddress(errcode_ret));
+            checkCLError(errcode_ret);
+        }
+
+        errcode = clSetMemObjectDestructorCallback(subbuffer, subbufferCB = CLMemObjectDestructorCallback.create((memobj, user_data) -> {
+            System.out.println("\t\tSub Buffer destructed: " + memobj);
+            destructorLatch.countDown();
+        }), NULL);
+        checkCLError(errcode);
+
+
+        //
+        //
+        //
+
+
+        System.out.println();
+
+        if (subbuffer != NULL) {
+            errcode = clReleaseMemObject(subbuffer);
+            checkCLError(errcode);
+        }
+
+        errcode = clReleaseMemObject(buffer);
+        checkCLError(errcode);
+
+        // mem object destructor callbacks are called asynchronously on Nvidia
+
+        try {
+            destructorLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        subbufferCB.free();
+
+        bufferCB2.free();
+        bufferCB1.free();
+
+        errcode = clReleaseContext(context);
+        checkCLError(errcode);
+
+        contextCB.free();
+
+
+    }
+
+    public static void main(String... args) throws IOException {
+
+        try (MemoryStack stack = stackPush()) {
+            demo(stack);
+        }
+
+
+    }
+
+    public static UsefulDevice getUsefulDevice(MemoryStack stack) {
         IntBuffer pi = stack.mallocInt(1);
         checkCLError(clGetPlatformIDs(null, pi));
         if (pi.get(0) == 0) {
@@ -44,8 +155,6 @@ public class Main {
         ctxProps
                 .put(0, CL_CONTEXT_PLATFORM)
                 .put(2, 0);
-
-        IntBuffer errcode_ret = stack.callocInt(1);
 
         System.out.println();
 
@@ -78,104 +187,14 @@ public class Main {
 
                 numDevicesTested++;
 
-                printDeviceInfo(device, deviceName + " -->> CL_DEVICE_OPENCL_C_VERSION", CL_DEVICE_OPENCL_C_VERSION);
-
-                CLContextCallback contextCB;
-                long context = clCreateContext(ctxProps, device, contextCB = CLContextCallback.create((errinfo, private_info, cb, user_data) -> {
-                    System.err.println("[LWJGL] cl_context_callback");
-                    System.err.println("\tInfo: " + memUTF8(errinfo));
-                }), MemoryUtil.NULL, errcode_ret);
-                checkCLError(errcode_ret);
-
-                long buffer = clCreateBuffer(context, CL_MEM_READ_ONLY, 128000000, errcode_ret);
-                checkCLError(errcode_ret);
-
-                CLMemObjectDestructorCallback bufferCB1;
-                CLMemObjectDestructorCallback bufferCB2;
-
-                long subbuffer;
-
-                CLMemObjectDestructorCallback subbufferCB;
-
-                int errcode;
-
-                CountDownLatch destructorLatch;
-
-                destructorLatch = new CountDownLatch(3);
-
-                errcode = clSetMemObjectDestructorCallback(buffer, bufferCB1 = CLMemObjectDestructorCallback.create((memobj, user_data) -> {
-                    System.out.println("\t\tBuffer destructed (1): " + memobj);
-                    destructorLatch.countDown();
-                }), NULL);
-                checkCLError(errcode);
-
-                errcode = clSetMemObjectDestructorCallback(buffer, bufferCB2 = CLMemObjectDestructorCallback.create((memobj, user_data) -> {
-                    System.out.println("\t\tBuffer destructed (2): " + memobj);
-                    destructorLatch.countDown();
-                }), NULL);
-                checkCLError(errcode);
-
-                try (CLBufferRegion buffer_region = CLBufferRegion.malloc()) {
-                    buffer_region.origin(0);
-                    buffer_region.size(64);
-
-                    subbuffer = nclCreateSubBuffer(buffer,
-                            CL_MEM_READ_ONLY,
-                            CL_BUFFER_CREATE_TYPE_REGION,
-                            buffer_region.address(),
-                            memAddress(errcode_ret));
-                    checkCLError(errcode_ret);
-                }
-
-                errcode = clSetMemObjectDestructorCallback(subbuffer, subbufferCB = CLMemObjectDestructorCallback.create((memobj, user_data) -> {
-                    System.out.println("\t\tSub Buffer destructed: " + memobj);
-                    destructorLatch.countDown();
-                }), NULL);
-                checkCLError(errcode);
-
-
-                //
-                //
-                //
-
-
-                System.out.println();
-
-                if (subbuffer != NULL) {
-                    errcode = clReleaseMemObject(subbuffer);
-                    checkCLError(errcode);
-                }
-
-                errcode = clReleaseMemObject(buffer);
-                checkCLError(errcode);
-
-                // mem object destructor callbacks are called asynchronously on Nvidia
-
-                try {
-                    destructorLatch.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                subbufferCB.free();
-
-                bufferCB2.free();
-                bufferCB1.free();
-
-                errcode = clReleaseContext(context);
-                checkCLError(errcode);
-
-                contextCB.free();
+                return new UsefulDevice(platform, device, deviceName, ctxProps);
             }
         }
 
+        return null;
     }
+}
 
-    public static void main(String... args) throws IOException {
-
-        try (MemoryStack stack = stackPush()) {
-            demo(stack);
-        }
 
 /*
         try {
@@ -222,5 +241,3 @@ public class Main {
         } finally {
             CL.destroy();
         }*/
-    }
-}
