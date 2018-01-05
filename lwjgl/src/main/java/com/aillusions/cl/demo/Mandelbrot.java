@@ -474,7 +474,7 @@ public class Mandelbrot {
         });
     }
 
-    private static long getDevice(long platform, CLCapabilities platformCaps, int deviceType) {
+    public static long getDevice(long platform, CLCapabilities platformCaps, int deviceType) {
         try (MemoryStack stack = stackPush()) {
             IntBuffer pi = stack.mallocInt(1);
             checkCLError(clGetDeviceIDs(platform, deviceType, null, pi));

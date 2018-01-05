@@ -262,7 +262,7 @@ public final class CLDemo {
         System.out.println("\t" + param_name + " = " + getPlatformInfoStringUTF8(platform, param));
     }
 
-    private static void printDeviceInfo(long device, String param_name, int param) {
+    public static void printDeviceInfo(long device, String param_name, int param) {
         System.out.println("\t" + param_name + " = " + getDeviceInfoStringUTF8(device, param));
     }
 
