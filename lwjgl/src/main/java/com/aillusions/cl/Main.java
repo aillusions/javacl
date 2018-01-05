@@ -14,8 +14,7 @@ import java.nio.IntBuffer;
 import java.util.concurrent.CountDownLatch;
 
 import static com.aillusions.cl.demo.CLDemo.printDeviceInfo;
-import static com.aillusions.cl.demo.InfoUtil.checkCLError;
-import static com.aillusions.cl.demo.InfoUtil.getDeviceInfoStringUTF8;
+import static com.aillusions.cl.demo.InfoUtil.*;
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opencl.CL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -49,11 +48,15 @@ public class Main {
         if (usDev == null) {
             System.out.println("No useful device found.");
             return;
+        } else {
+            System.out.println("Useful device: " + usDev.toString());
         }
 
         long context = usDev.getContext();
 
-        long buffer = clCreateBuffer(context, CL_MEM_READ_ONLY, 128, errcode_ret);
+        int bufferSize = Integer.MAX_VALUE;
+
+        long buffer = clCreateBuffer(context, CL_MEM_READ_ONLY, bufferSize, errcode_ret);
         checkCLError(errcode_ret);
 
         CLMemObjectDestructorCallback bufferCB1;
@@ -171,9 +174,11 @@ public class Main {
                     continue;
                 }
 
+                int addressBits = getDeviceInfoInt(device, CL_DEVICE_ADDRESS_BITS);
+
                 printDeviceInfo(device, deviceName + " -->> CL_DEVICE_OPENCL_C_VERSION", CL_DEVICE_OPENCL_C_VERSION);
 
-                return new UsefulDevice(platform, device, deviceName, ctxProps, errcode_ret);
+                return new UsefulDevice(platform, device, deviceName, ctxProps, errcode_ret, addressBits);
             }
         }
 

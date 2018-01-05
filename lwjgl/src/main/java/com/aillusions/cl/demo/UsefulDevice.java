@@ -1,6 +1,7 @@
 package com.aillusions.cl.demo;
 
 import lombok.Data;
+import lombok.ToString;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.CLContextCallback;
 import org.lwjgl.system.MemoryUtil;
@@ -16,21 +17,25 @@ import static org.lwjgl.system.MemoryUtil.memUTF8;
  * @author aillusions
  */
 @Data
+@ToString
 public class UsefulDevice {
     private long platform;
     private long device;
     private String deviceName;
     private PointerBuffer ctxProps;
 
+    private int addressBits;
+
     private CLContextCallback contextC;
     private CLContextCallback contextCB;
     private long context;
 
-    public UsefulDevice(long platform, long device, String deviceName, PointerBuffer ctxProps, IntBuffer errcode_ret) {
+    public UsefulDevice(long platform, long device, String deviceName, PointerBuffer ctxProps, IntBuffer errcode_ret, int addressBits) {
         this.platform = platform;
         this.device = device;
         this.deviceName = deviceName;
         this.ctxProps = ctxProps;
+        this.addressBits = addressBits;
 
         context = clCreateContext(ctxProps, device, contextCB = CLContextCallback.create((errinfo, private_info, cb, user_data) -> {
             System.err.println("[LWJGL] cl_context_callback");
