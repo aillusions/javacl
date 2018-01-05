@@ -100,6 +100,12 @@ public class Main {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        buildCallback.free();
+
+        // init kernel with constants
+        long clKernel = clCreateKernel(clProgram, "openCLSumK", errcode_ret);
+        checkCLError(errcode_ret);
     }
 
     public static void allocateBuffer(IntBuffer errcode_ret, UsefulDevice usDev) {
