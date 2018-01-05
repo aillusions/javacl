@@ -4,10 +4,7 @@ import com.aillusions.cl.device.OpenCLDeviceProvider;
 import com.aillusions.cl.device.UsefulDevice;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CLBufferRegion;
-import org.lwjgl.opencl.CLEventCallback;
-import org.lwjgl.opencl.CLMemObjectDestructorCallback;
-import org.lwjgl.opencl.CLNativeKernel;
+import org.lwjgl.opencl.*;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
@@ -19,8 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.aillusions.cl.demo.CLDemo.getEventStatusName;
 import static com.aillusions.cl.demo.IOUtil.ioResourceToByteBuffer;
-import static com.aillusions.cl.demo.InfoUtil.checkCLError;
-import static com.aillusions.cl.demo.InfoUtil.getDeviceInfoLong;
+import static com.aillusions.cl.demo.InfoUtil.*;
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opencl.CL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -66,6 +62,7 @@ public class Main {
 
     public static void executeKernel(IntBuffer errcode_ret, UsefulDevice usDev) throws IOException {
 
+        long device = usDev.getDevice();
         long context = usDev.getContext();
 
         PointerBuffer strings = BufferUtils.createPointerBuffer(1);
@@ -78,6 +75,31 @@ public class Main {
         long clProgram = clCreateProgramWithSource(context, strings, lengths, errcode_ret);
         checkCLError(errcode_ret);
 
+        StringBuilder options = new StringBuilder("");
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        CLProgramCallback buildCallback;
+        int errcode = clBuildProgram(clProgram, device, options, buildCallback = CLProgramCallback.create((program, user_data) -> {
+            System.out.println(String.format(
+                    "The cl_program [0x%X] was built %s",
+                    program,
+                    getProgramBuildInfoInt(program, device, CL_PROGRAM_BUILD_STATUS) == CL_SUCCESS ? "successfully" : "unsuccessfully"
+            ));
+            String log = getProgramBuildInfoStringASCII(program, device, CL_PROGRAM_BUILD_LOG);
+            if (!log.isEmpty()) {
+                System.out.println(String.format("BUILD LOG:\n----\n%s\n-----", log));
+            }
+
+            latch.countDown();
+        }), NULL);
+        checkCLError(errcode);
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void allocateBuffer(IntBuffer errcode_ret, UsefulDevice usDev) {
