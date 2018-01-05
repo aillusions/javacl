@@ -2,10 +2,12 @@ package com.aillusions.cl;
 
 import com.aillusions.cl.demo.UsefulDevice;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.*;
+import org.lwjgl.opencl.CL;
+import org.lwjgl.opencl.CLBufferRegion;
+import org.lwjgl.opencl.CLCapabilities;
+import org.lwjgl.opencl.CLMemObjectDestructorCallback;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -17,7 +19,8 @@ import static com.aillusions.cl.demo.InfoUtil.getDeviceInfoStringUTF8;
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opencl.CL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memAddress;
 
 /**
  * https://www.lwjgl.org/customize
@@ -31,25 +34,26 @@ public class Main {
         Configuration.OPENCL_EXPLICIT_INIT.set(false);
     }
 
+    public static void main(String... args) throws IOException {
+
+        try (MemoryStack stack = stackPush()) {
+            demo(stack);
+        }
+    }
+
     private static void demo(MemoryStack stack) {
 
         IntBuffer errcode_ret = stack.callocInt(1);
 
-        UsefulDevice usDev = getUsefulDevice(stack);
-        long device = usDev.getDevice();
-        String deviceName = usDev.getDeviceName();
-        PointerBuffer ctxProps = usDev.getCtxProps();
+        UsefulDevice usDev = getUsefulDevice(stack, errcode_ret);
+        if (usDev == null) {
+            System.out.println("No useful device found.");
+            return;
+        }
 
-        printDeviceInfo(device, deviceName + " -->> CL_DEVICE_OPENCL_C_VERSION", CL_DEVICE_OPENCL_C_VERSION);
+        long context = usDev.getContext();
 
-        CLContextCallback contextCB;
-        long context = clCreateContext(ctxProps, device, contextCB = CLContextCallback.create((errinfo, private_info, cb, user_data) -> {
-            System.err.println("[LWJGL] cl_context_callback");
-            System.err.println("\tInfo: " + memUTF8(errinfo));
-        }), MemoryUtil.NULL, errcode_ret);
-        checkCLError(errcode_ret);
-
-        long buffer = clCreateBuffer(context, CL_MEM_READ_ONLY, 128000000, errcode_ret);
+        long buffer = clCreateBuffer(context, CL_MEM_READ_ONLY, 128, errcode_ret);
         checkCLError(errcode_ret);
 
         CLMemObjectDestructorCallback bufferCB1;
@@ -79,7 +83,7 @@ public class Main {
 
         try (CLBufferRegion buffer_region = CLBufferRegion.malloc()) {
             buffer_region.origin(0);
-            buffer_region.size(64000000);
+            buffer_region.size(64);
 
             subbuffer = nclCreateSubBuffer(buffer,
                     CL_MEM_READ_ONLY,
@@ -95,11 +99,9 @@ public class Main {
         }), NULL);
         checkCLError(errcode);
 
-
         //
         //
         //
-
 
         System.out.println();
 
@@ -124,24 +126,10 @@ public class Main {
         bufferCB2.free();
         bufferCB1.free();
 
-        errcode = clReleaseContext(context);
-        checkCLError(errcode);
-
-        contextCB.free();
-
-
+        usDev.clear();
     }
 
-    public static void main(String... args) throws IOException {
-
-        try (MemoryStack stack = stackPush()) {
-            demo(stack);
-        }
-
-
-    }
-
-    public static UsefulDevice getUsefulDevice(MemoryStack stack) {
+    public static UsefulDevice getUsefulDevice(MemoryStack stack, IntBuffer errcode_ret) {
         IntBuffer pi = stack.mallocInt(1);
         checkCLError(clGetPlatformIDs(null, pi));
         if (pi.get(0) == 0) {
@@ -158,7 +146,6 @@ public class Main {
 
         System.out.println();
 
-        int numDevicesTested = 0;
         for (int p = 0; p < platforms.capacity(); p++) {
             long platform = platforms.get(p);
             ctxProps.put(1, platform);
@@ -177,17 +164,16 @@ public class Main {
 
                 String deviceName = getDeviceInfoStringUTF8(device, CL_DEVICE_NAME);
 
-                if (numDevicesTested > 0
-                        || !caps.OpenCL11
+                if (!caps.OpenCL11
                         || deviceName.contains("CPU")
                         || deviceName.contains("Intel")
                         || deviceName.contains("Iris")) {
                     continue;
                 }
 
-                numDevicesTested++;
+                printDeviceInfo(device, deviceName + " -->> CL_DEVICE_OPENCL_C_VERSION", CL_DEVICE_OPENCL_C_VERSION);
 
-                return new UsefulDevice(platform, device, deviceName, ctxProps);
+                return new UsefulDevice(platform, device, deviceName, ctxProps, errcode_ret);
             }
         }
 
