@@ -24,15 +24,15 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 
-import static com.aillusions.cl.demo.CLGLInteropDemo.*;
-import static com.aillusions.cl.demo.IOUtil.*;
+import static com.aillusions.cl.demo.CLGLInteropDemo.GLFWWindow;
+import static com.aillusions.cl.demo.IOUtil.ioResourceToByteBuffer;
+import static com.aillusions.cl.demo.InfoUtil.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFWNativeGLX.glfwGetGLXContext;
 import static org.lwjgl.glfw.GLFWNativeWGL.glfwGetWGLContext;
 import static org.lwjgl.glfw.GLFWNativeX11.glfwGetX11Display;
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opencl.CL10GL.*;
-import static com.aillusions.cl.demo.InfoUtil.*;
 import static org.lwjgl.opencl.KHRGLSharing.*;
 import static org.lwjgl.opengl.ARBCLEvent.glCreateSyncFromCLeventARB;
 import static org.lwjgl.opengl.CGL.CGLGetCurrentContext;

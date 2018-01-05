@@ -4,20 +4,24 @@
  */
 package com.aillusions.cl.demo;
 
-import org.lwjgl.*;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
-import org.lwjgl.system.*;
+import org.lwjgl.system.FunctionProviderLocal;
+import org.lwjgl.system.MemoryStack;
 
-import java.nio.*;
-import java.util.concurrent.*;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import static com.aillusions.cl.demo.InfoUtil.*;
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opencl.CL11.*;
-import static com.aillusions.cl.demo.InfoUtil.*;
-import static org.lwjgl.opencl.KHRICD.*;
-import static org.lwjgl.system.MemoryStack.*;
+import static org.lwjgl.opencl.KHRICD.CL_PLATFORM_ICD_SUFFIX_KHR;
+import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.*;
-import static org.lwjgl.system.Pointer.*;
+import static org.lwjgl.system.Pointer.POINTER_SIZE;
 
 public final class CLDemo {
 
@@ -38,7 +42,7 @@ public final class CLDemo {
         }
 
         PointerBuffer platforms = stack.mallocPointer(pi.get(0));
-        checkCLError(clGetPlatformIDs(platforms, (IntBuffer)null));
+        checkCLError(clGetPlatformIDs(platforms, (IntBuffer) null));
 
         PointerBuffer ctxProps = stack.mallocPointer(3);
         ctxProps
@@ -68,7 +72,7 @@ public final class CLDemo {
             checkCLError(clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, null, pi));
 
             PointerBuffer devices = stack.mallocPointer(pi.get(0));
-            checkCLError(clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, devices, (IntBuffer)null));
+            checkCLError(clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, devices, (IntBuffer) null));
 
             for (int d = 0; d < devices.capacity(); d++) {
                 long device = devices.get(d);
@@ -202,15 +206,15 @@ public final class CLDemo {
                     kernel = CLNativeKernel.create(args -> {
                     });
 
-                    long time   = System.nanoTime();
-                    int  REPEAT = 1000;
+                    long time = System.nanoTime();
+                    int REPEAT = 1000;
                     for (int i = 0; i < REPEAT; i++) {
                         clEnqueueNativeKernel(queue, kernel, kernelArgs, null, null, null, null);
                     }
                     clFinish(queue);
                     time = System.nanoTime() - time;
 
-                    System.out.printf("\n\t\tEMPTY NATIVE KERNEL AVG EXEC TIME: %.4fus\n", (double)time / (REPEAT * 1000));
+                    System.out.printf("\n\t\tEMPTY NATIVE KERNEL AVG EXEC TIME: %.4fus\n", (double) time / (REPEAT * 1000));
 
                     errcode = clReleaseCommandQueue(queue);
                     checkCLError(errcode);

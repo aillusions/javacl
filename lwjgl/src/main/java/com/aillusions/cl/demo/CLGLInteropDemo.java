@@ -13,10 +13,10 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
+import static com.aillusions.cl.demo.InfoUtil.*;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opencl.CL10.*;
-import static com.aillusions.cl.demo.InfoUtil.*;
 import static org.lwjgl.opencl.KHRICD.CL_PLATFORM_ICD_SUFFIX_KHR;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -64,7 +64,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
  * -XstartOnFirstThread
- * */
+ */
 public final class CLGLInteropDemo {
 
     private static final Set<String> params = new HashSet<>(8);
@@ -305,7 +305,9 @@ public final class CLGLInteropDemo {
 
         final String ID;
 
-        /** Used to signal that the rendering thread has completed. */
+        /**
+         * Used to signal that the rendering thread has completed.
+         */
         final CountDownLatch signal;
 
         GLFWWindowSizeCallback windowsizefun;

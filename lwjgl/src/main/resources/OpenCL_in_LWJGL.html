@@ -1,74 +1,151 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" class="client-nojs">
 <head>
-<meta charset="UTF-8" />
-<title>OpenCL in LWJGL - LWJGL</title>
-<meta name="generator" content="MediaWiki 1.25.1" />
-<link rel="shortcut icon" href="http://wiki.lwjgl.org/favicon.ico" />
-<link rel="search" type="application/opensearchdescription+xml" href="../opensearch_desc.php" title="LWJGL (en)" />
-<link rel="EditURI" type="application/rsd+xml" href="http://wiki.lwjgl.org/api.php?action=rsd" />
-<link rel="alternate" hreflang="x-default" href="OpenCL_in_LWJGL.html" />
-<link rel="copyright" href="http://creativecommons.org/licenses/publicdomain/" />
-<link rel="alternate" type="application/atom+xml" title="LWJGL Atom feed" href="http://wiki.lwjgl.org/index.php?title=Special:RecentChanges&amp;feed=atom" />
-<link rel="stylesheet" href="../load.php%3Fdebug=false&amp;lang=en&amp;modules=mediawiki.legacy.commonPrint%252Cshared%257Cmediawiki.sectionAnchor%257Cmediawiki.skinning.interface%257Cmediawiki.ui.button%257Cskins.vector.styles&amp;only=styles&amp;skin=vector&amp;*.css" />
-<meta name="ResourceLoaderDynamicStyles" content="" />
-<style>a:lang(ar),a:lang(kk-arab),a:lang(mzn),a:lang(ps),a:lang(ur){text-decoration:none}
-/* cache key: wiki-mw_:resourceloader:filter:minify-css:7:1b56003530876840dd8bc0345f288d5d */</style>
-<script src="../load.php%3Fdebug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=vector&amp;*"></script>
-<script>if(window.mw){
-mw.config.set({"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"OpenCL_in_LWJGL","wgTitle":"OpenCL in LWJGL","wgCurRevisionId":986,"wgRevisionId":986,"wgArticleId":183,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":[],"wgBreakFrames":false,"wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgMonthNamesShort":["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"wgRelevantPageName":"OpenCL_in_LWJGL","wgRelevantArticleId":183,"wgIsProbablyEditable":false,"wgRestrictionEdit":[],"wgRestrictionMove":[]});
-}</script><script>if(window.mw){
-mw.loader.implement("user.options",function($,jQuery){mw.user.options.set({"variant":"en"});});mw.loader.implement("user.tokens",function($,jQuery){mw.user.tokens.set({"editToken":"+\\","patrolToken":"+\\","watchToken":"+\\"});});
-/* cache key: wiki-mw_:resourceloader:filter:minify-js:7:a5c52c063dc436c1ca7c9f456936a5e9 */
-}</script>
-<script>if(window.mw){
-mw.loader.load(["mediawiki.page.startup","mediawiki.legacy.wikibits","mediawiki.legacy.ajax","skins.vector.js"]);
-}</script>
-<!--[if lt IE 7]><style type="text/css">body{behavior:url("/skins/Vector/csshover.min.htc")}</style><![endif]-->
+    <meta charset="UTF-8"/>
+    <title>OpenCL in LWJGL - LWJGL</title>
+    <meta name="generator" content="MediaWiki 1.25.1"/>
+    <link rel="shortcut icon" href="http://wiki.lwjgl.org/favicon.ico"/>
+    <link rel="search" type="application/opensearchdescription+xml" href="../opensearch_desc.php" title="LWJGL (en)"/>
+    <link rel="EditURI" type="application/rsd+xml" href="http://wiki.lwjgl.org/api.php?action=rsd"/>
+    <link rel="alternate" hreflang="x-default" href="OpenCL_in_LWJGL.html"/>
+    <link rel="copyright" href="http://creativecommons.org/licenses/publicdomain/"/>
+    <link rel="alternate" type="application/atom+xml" title="LWJGL Atom feed"
+          href="http://wiki.lwjgl.org/index.php?title=Special:RecentChanges&amp;feed=atom"/>
+    <link rel="stylesheet"
+          href="../load.php%3Fdebug=false&amp;lang=en&amp;modules=mediawiki.legacy.commonPrint%252Cshared%257Cmediawiki.sectionAnchor%257Cmediawiki.skinning.interface%257Cmediawiki.ui.button%257Cskins.vector.styles&amp;only=styles&amp;skin=vector&amp;*.css"/>
+    <meta name="ResourceLoaderDynamicStyles" content=""/>
+    <style>a:lang(ar), a:lang(kk-arab), a:lang(mzn), a:lang(ps), a:lang(ur) {
+        text-decoration: none
+    }
+
+    /* cache key: wiki-mw_:resourceloader:filter:minify-css:7:1b56003530876840dd8bc0345f288d5d */</style>
+    <script src="../load.php%3Fdebug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=vector&amp;*"></script>
+    <script>if (window.mw) {
+        mw.config.set({
+            "wgCanonicalNamespace": "",
+            "wgCanonicalSpecialPageName": false,
+            "wgNamespaceNumber": 0,
+            "wgPageName": "OpenCL_in_LWJGL",
+            "wgTitle": "OpenCL in LWJGL",
+            "wgCurRevisionId": 986,
+            "wgRevisionId": 986,
+            "wgArticleId": 183,
+            "wgIsArticle": true,
+            "wgIsRedirect": false,
+            "wgAction": "view",
+            "wgUserName": null,
+            "wgUserGroups": ["*"],
+            "wgCategories": [],
+            "wgBreakFrames": false,
+            "wgPageContentLanguage": "en",
+            "wgPageContentModel": "wikitext",
+            "wgSeparatorTransformTable": ["", ""],
+            "wgDigitTransformTable": ["", ""],
+            "wgDefaultDateFormat": "dmy",
+            "wgMonthNames": ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+            "wgMonthNamesShort": ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            "wgRelevantPageName": "OpenCL_in_LWJGL",
+            "wgRelevantArticleId": 183,
+            "wgIsProbablyEditable": false,
+            "wgRestrictionEdit": [],
+            "wgRestrictionMove": []
+        });
+    }</script>
+    <script>if (window.mw) {
+        mw.loader.implement("user.options", function ($, jQuery) {
+            mw.user.options.set({"variant": "en"});
+        });
+        mw.loader.implement("user.tokens", function ($, jQuery) {
+            mw.user.tokens.set({"editToken": "+\\", "patrolToken": "+\\", "watchToken": "+\\"});
+        });
+        /* cache key: wiki-mw_:resourceloader:filter:minify-js:7:a5c52c063dc436c1ca7c9f456936a5e9 */
+    }</script>
+    <script>if (window.mw) {
+        mw.loader.load(["mediawiki.page.startup", "mediawiki.legacy.wikibits", "mediawiki.legacy.ajax", "skins.vector.js"]);
+    }</script>
+    <!--[if lt IE 7]>
+    <style type="text/css">body {
+        behavior: url("/skins/Vector/csshover.min.htc")
+    }</style><![endif]-->
 </head>
 <body class="mediawiki ltr sitedir-ltr ns-0 ns-subject page-OpenCL_in_LWJGL skin-vector action-view">
-		<div id="mw-page-base" class="noprint"></div>
-		<div id="mw-head-base" class="noprint"></div>
-		<div id="content" class="mw-body" role="main">
-			<a id="top"></a>
+<div id="mw-page-base" class="noprint"></div>
+<div id="mw-head-base" class="noprint"></div>
+<div id="content" class="mw-body" role="main">
+    <a id="top"></a>
 
-						<div class="mw-indicators">
-</div>
-			<h1 id="firstHeading" class="firstHeading" lang="en">OpenCL in LWJGL</h1>
-						<div id="bodyContent" class="mw-body-content">
-									<div id="siteSub">From LWJGL</div>
-								<div id="contentSub"></div>
-												<div id="jump-to-nav" class="mw-jump">
-					Jump to:					<a href="OpenCL_in_LWJGL.html#mw-head">navigation</a>, 					<a href="OpenCL_in_LWJGL.html#p-search">search</a>
-				</div>
-				<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr"><p>OpenCL is an extremely useful feature for any cpu intensive game. Most modern CPUs have multiple cores for parallel processing, but you do not need one of these for effective use of openCL. OpenCL is designed for parallel processing and can be setup to run on a computer's GPU, which is idle when you are not drawing your game. OpenCL can help you unlock the GPU's multithreading potential for purposes other than graphics.
-</p><p><br />
-</p>
-<div id="toc" class="toc"><div id="toctitle"><h2>Contents</h2></div>
-<ul>
-<li class="toclevel-1 tocsection-1"><a href="OpenCL_in_LWJGL.html#A_Bit_of_Terminology"><span class="tocnumber">1</span> <span class="toctext">A Bit of Terminology</span></a></li>
-<li class="toclevel-1 tocsection-2"><a href="OpenCL_in_LWJGL.html#The_Kernel_Example"><span class="tocnumber">2</span> <span class="toctext">The Kernel Example</span></a></li>
-<li class="toclevel-1 tocsection-3"><a href="OpenCL_in_LWJGL.html#Creating_the_Context_and_Command_Queue"><span class="tocnumber">3</span> <span class="toctext">Creating the Context and Command Queue</span></a></li>
-<li class="toclevel-1 tocsection-4"><a href="OpenCL_in_LWJGL.html#Allocating_Memory"><span class="tocnumber">4</span> <span class="toctext">Allocating Memory</span></a></li>
-<li class="toclevel-1 tocsection-5"><a href="OpenCL_in_LWJGL.html#Creating_Programs_and_Kernels"><span class="tocnumber">5</span> <span class="toctext">Creating Programs and Kernels</span></a></li>
-<li class="toclevel-1 tocsection-6"><a href="OpenCL_in_LWJGL.html#Setting_Arguments_For_Kernels"><span class="tocnumber">6</span> <span class="toctext">Setting Arguments For Kernels</span></a></li>
-<li class="toclevel-1 tocsection-7"><a href="OpenCL_in_LWJGL.html#Running_Kernels"><span class="tocnumber">7</span> <span class="toctext">Running Kernels</span></a></li>
-<li class="toclevel-1 tocsection-8"><a href="OpenCL_in_LWJGL.html#Reading_and_Writing_to_Memory"><span class="tocnumber">8</span> <span class="toctext">Reading and Writing to Memory</span></a></li>
-<li class="toclevel-1 tocsection-9"><a href="OpenCL_in_LWJGL.html#Cleaning_up_After_Ourselves"><span class="tocnumber">9</span> <span class="toctext">Cleaning up After Ourselves</span></a></li>
-<li class="toclevel-1 tocsection-10"><a href="OpenCL_in_LWJGL.html#The_Full_Code"><span class="tocnumber">10</span> <span class="toctext">The Full Code</span></a></li>
-</ul>
-</div>
+    <div class="mw-indicators">
+    </div>
+    <h1 id="firstHeading" class="firstHeading" lang="en">OpenCL in LWJGL</h1>
+    <div id="bodyContent" class="mw-body-content">
+        <div id="siteSub">From LWJGL</div>
+        <div id="contentSub"></div>
+        <div id="jump-to-nav" class="mw-jump">
+            Jump to: <a href="OpenCL_in_LWJGL.html#mw-head">navigation</a>, <a href="OpenCL_in_LWJGL.html#p-search">search</a>
+        </div>
+        <div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr"><p>OpenCL is an extremely useful feature
+            for any cpu intensive game. Most modern CPUs have multiple cores for parallel processing, but you do not
+            need one of these for effective use of openCL. OpenCL is designed for parallel processing and can be setup
+            to run on a computer's GPU, which is idle when you are not drawing your game. OpenCL can help you unlock the
+            GPU's multithreading potential for purposes other than graphics.
+        </p>
+            <p><br/>
+            </p>
+            <div id="toc" class="toc">
+                <div id="toctitle"><h2>Contents</h2></div>
+                <ul>
+                    <li class="toclevel-1 tocsection-1"><a href="OpenCL_in_LWJGL.html#A_Bit_of_Terminology"><span
+                            class="tocnumber">1</span> <span class="toctext">A Bit of Terminology</span></a></li>
+                    <li class="toclevel-1 tocsection-2"><a href="OpenCL_in_LWJGL.html#The_Kernel_Example"><span
+                            class="tocnumber">2</span> <span class="toctext">The Kernel Example</span></a></li>
+                    <li class="toclevel-1 tocsection-3"><a
+                            href="OpenCL_in_LWJGL.html#Creating_the_Context_and_Command_Queue"><span
+                            class="tocnumber">3</span> <span
+                            class="toctext">Creating the Context and Command Queue</span></a></li>
+                    <li class="toclevel-1 tocsection-4"><a href="OpenCL_in_LWJGL.html#Allocating_Memory"><span
+                            class="tocnumber">4</span> <span class="toctext">Allocating Memory</span></a></li>
+                    <li class="toclevel-1 tocsection-5"><a
+                            href="OpenCL_in_LWJGL.html#Creating_Programs_and_Kernels"><span class="tocnumber">5</span>
+                        <span class="toctext">Creating Programs and Kernels</span></a></li>
+                    <li class="toclevel-1 tocsection-6"><a
+                            href="OpenCL_in_LWJGL.html#Setting_Arguments_For_Kernels"><span class="tocnumber">6</span>
+                        <span class="toctext">Setting Arguments For Kernels</span></a></li>
+                    <li class="toclevel-1 tocsection-7"><a href="OpenCL_in_LWJGL.html#Running_Kernels"><span
+                            class="tocnumber">7</span> <span class="toctext">Running Kernels</span></a></li>
+                    <li class="toclevel-1 tocsection-8"><a
+                            href="OpenCL_in_LWJGL.html#Reading_and_Writing_to_Memory"><span class="tocnumber">8</span>
+                        <span class="toctext">Reading and Writing to Memory</span></a></li>
+                    <li class="toclevel-1 tocsection-9"><a href="OpenCL_in_LWJGL.html#Cleaning_up_After_Ourselves"><span
+                            class="tocnumber">9</span> <span class="toctext">Cleaning up After Ourselves</span></a></li>
+                    <li class="toclevel-1 tocsection-10"><a href="OpenCL_in_LWJGL.html#The_Full_Code"><span
+                            class="tocnumber">10</span> <span class="toctext">The Full Code</span></a></li>
+                </ul>
+            </div>
 
-<h2><span class="mw-headline" id="A_Bit_of_Terminology">A Bit of Terminology</span></h2>
-<ul><li> <b>Kernel</b> This is an entrypoint into the OpenCL code you write. It is what will be called from your main application to initiate a program.</li>
-<li> <b>Work-Item</b> The smallest unit of work. Each work item runs the program individually and has it's own unique id to identify it.</li>
-<li> <b>Work-Group</b> Work items are organized into work groups. They are stored in a 1, 2 or 3 dimensional array. Work groups exist to allow sharing of memory between items and also have their own unique id.</li>
-<li> <b>N-D Range</b> Work groups are further organized into another 1, 2 or 3 dimensional array specified by the N-D range.</li></ul>
-<h2><span class="mw-headline" id="The_Kernel_Example">The Kernel Example</span></h2>
-<p>The example I will be using throughout is that of adding together the contents of two arrays element by element, and returning the result in a different array. As a guide, I will write the equivalent code in Java and C (OpenCL is similar to C) and finally give and briefly explain the method as a OpenCL kernel.
-</p><p>In Java:
-</p>
-<pre class="brush:c">
+            <h2><span class="mw-headline" id="A_Bit_of_Terminology">A Bit of Terminology</span></h2>
+            <ul>
+                <li><b>Kernel</b> This is an entrypoint into the OpenCL code you write. It is what will be called from
+                    your main application to initiate a program.
+                </li>
+                <li><b>Work-Item</b> The smallest unit of work. Each work item runs the program individually and has
+                    it's own unique id to identify it.
+                </li>
+                <li><b>Work-Group</b> Work items are organized into work groups. They are stored in a 1, 2 or 3
+                    dimensional array. Work groups exist to allow sharing of memory between items and also have their
+                    own unique id.
+                </li>
+                <li><b>N-D Range</b> Work groups are further organized into another 1, 2 or 3 dimensional array
+                    specified by the N-D range.
+                </li>
+            </ul>
+            <h2><span class="mw-headline" id="The_Kernel_Example">The Kernel Example</span></h2>
+            <p>The example I will be using throughout is that of adding together the contents of two arrays element by
+                element, and returning the result in a different array. As a guide, I will write the equivalent code in
+                Java and C (OpenCL is similar to C) and finally give and briefly explain the method as a OpenCL kernel.
+            </p>
+            <p>In Java:
+            </p>
+            <pre class="brush:c">
 // Imagine this is in a class.
 public static void sum(float[] a, float[] b, float[] result) {
     // Using an argument as a reference to change a desired piece of memory is an odd way to go about this in Java but bear with me.
@@ -77,10 +154,10 @@ public static void sum(float[] a, float[] b, float[] result) {
         result[i] = a[i] + b[i];
     }
 }    
-</pre> 
-<p>In an OpenCL kernel.
-</p>
-<pre class="brush:c">
+</pre>
+            <p>In an OpenCL kernel.
+            </p>
+            <pre class="brush:c">
 // OpenCL uses pointers (using the * symbol after the data type),
 // which point to a location in memory, normally pointers point to
 // the first element in an array. 
@@ -103,49 +180,68 @@ kernel void sum(global const float* a, global const float* b, global float* resu
       //The easiest part of all, adding the numbers together.
    }
 }    
-</pre> 
-<p>I realize that this is not the best explanation for the code itself, but I didn't want to spend to long on it. You are all smart people and this is essentially C syntax with _global and _kernel keywords.
-</p><p><br />
-</p>
-<h2><span class="mw-headline" id="Creating_the_Context_and_Command_Queue">Creating the Context and Command Queue</span></h2>
-<ul><li><b>Creation</b></li></ul>
-<p>In LWJGL, just as in OpenGL and OpenAL, you must call the CL create method before doing anything in OpenCL.
-</p>
-<pre class="brush:c">
+</pre>
+            <p>I realize that this is not the best explanation for the code itself, but I didn't want to spend to long
+                on it. You are all smart people and this is essentially C syntax with _global and _kernel keywords.
+            </p>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="Creating_the_Context_and_Command_Queue">Creating the Context and Command Queue</span>
+            </h2>
+            <ul>
+                <li><b>Creation</b></li>
+            </ul>
+            <p>In LWJGL, just as in OpenGL and OpenAL, you must call the CL create method before doing anything in
+                OpenCL.
+            </p>
+            <pre class="brush:c">
 public static void initializeCL() throws LWJGLException { 
    //Throws LWJGLException if an error occurs. If you get a message saying could not find CL Source(Or something similar), then
    //your hardware does not support openCL. (Try updating drivers first though). 
    CL.create();
 }
-</pre> 
-<ul><li><b>Platform</b></li></ul>
-<p>The platform is a collection of the host (your program on the cpu) and a series of devices (see below). It allows for management and sharing of memory between devices. In LWJGL, a platform is represented by the CLPlatform class, which contains a very helpful static method for retrieving platforms.
-</p>
-<pre class="brush:c">
+</pre>
+            <ul>
+                <li><b>Platform</b></li>
+            </ul>
+            <p>The platform is a collection of the host (your program on the cpu) and a series of devices (see below).
+                It allows for management and sharing of memory between devices. In LWJGL, a platform is represented by
+                the CLPlatform class, which contains a very helpful static method for retrieving platforms.
+            </p>
+            <pre class="brush:c">
    //The getPlatforms() method return a List&lt;CLPlatform&gt; which contains the available platforms on your hardware. Picking 0 will suffice for now.
    CLPlatform platform = CLPlatform.getPlatforms().get(0); 
 </pre>
-<ul><li><b>Device</b></li></ul>
-<p>A device is any piece of hardware that can run an OpenCL kernel, like your GPU or CPU. It is represented in LWJGL by CLDevice and you can access it through a CLPlatform.
-</p>
-<pre class="brush:c">
+            <ul>
+                <li><b>Device</b></li>
+            </ul>
+            <p>A device is any piece of hardware that can run an OpenCL kernel, like your GPU or CPU. It is represented
+                in LWJGL by CLDevice and you can access it through a CLPlatform.
+            </p>
+            <pre class="brush:c">
    //A great method from the lovely people at LWJGL which gives you a list of all devices of a particular type.
    //I am using the GPU. There are others devices including CL_DEVICE_TYPE_ALL and CL_DEVICE_TYPE_DEFAULT.
    List&lt;CLDevice&gt; devices = platform.getDevices(CL10.CL_DEVICE_TYPE_GPU);
 </pre>
-<ul><li><b>Context</b></li></ul>
-<p>The context ties the devices, kernels, memory, and queues. It is represented by the CLContext class and once more a nifty method exists to get an instance.
-</p>
-<pre class="brush:c">
+            <ul>
+                <li><b>Context</b></li>
+            </ul>
+            <p>The context ties the devices, kernels, memory, and queues. It is represented by the CLContext class and
+                once more a nifty method exists to get an instance.
+            </p>
+            <pre class="brush:c">
    //The last null argument is where an Intbuffer would be if you wanted to get an error code out of the method. I am leaving this null for simplicity.
    //This method throws a LWJGLException if &quot;an exception occurs while creating the context&quot;. I take this to mean that it will thrown an error if the context could not be created,
    //which makes the error code useless. There are other overloaded methods taking more arguments such as a Drawable to share with OpenGL, but that is beyond this tutorial's scope. 
    CLContext context = CLContext.create(platform, devices, null);
 </pre>
-<ul><li><b>Command Queue</b></li></ul>
-<p>The command queue, represented by the CLCommandQueue class, is the final object to initialize. It is created for a specific device and allows commands to be sent to the device via a queue.
-</p>
-<pre class="brush:c">
+            <ul>
+                <li><b>Command Queue</b></li>
+            </ul>
+            <p>The command queue, represented by the CLCommandQueue class, is the final object to initialize. It is
+                created for a specific device and allows commands to be sent to the device via a queue.
+            </p>
+            <pre class="brush:c">
    IntBuffer errorBuf = BufferUtils.createIntBuffer(1); //This time we'll check for errors
    //The first two arguments for clCreateCommandQueue() are the context and device (I just used the first device in our list).
    //The third argument is properties. This one is necessary to profile the queue later, you may not need do this but I like to use this property. The last property is an IntBuffer to store an error code.
@@ -153,10 +249,10 @@ public static void initializeCL() throws LWJGLException {
    // checkCLError throw a CLExcepetion if the error code does not equal CL_SUCCESS. This exception should be caught and all currently created resources released. See later. 
    Util.checkCLError(errorBuf.get(0)); 
 </pre>
-<p><br />
-And now the whole code, in a class and putting the various CL objects in static fields:
-</p>
-<pre class="brush:c">
+            <p><br/>
+                And now the whole code, in a class and putting the various CL objects in static fields:
+            </p>
+            <pre class="brush:c">
 import java.util.List;
 import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
@@ -180,14 +276,20 @@ public class MyClClass {
    }
 }
 </pre>
-<p>All further code is in this class allowing us to use our static CL Objects.
-</p><p><br />
-</p>
-<h2><span class="mw-headline" id="Allocating_Memory">Allocating Memory</span></h2>
-<p>If all has gone well you now have a fully functional CL context ready to execute your kernels. Now we just have to load the program, allocate the memory, and run the program.
-</p><p>If you remember, the arrays in our kernel were global so they could be accessed by all of the running kernels. This means we must create a space for them in our context. Memory in an OpenCL context is represented in LWJGL by the CLMem class. There are several ways to create this object, some constructors take a buffer of data and copy it and other just take a size argument. 
-</p>
-<pre class="brush:c">
+            <p>All further code is in this class allowing us to use our static CL Objects.
+            </p>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="Allocating_Memory">Allocating Memory</span></h2>
+            <p>If all has gone well you now have a fully functional CL context ready to execute your kernels. Now we
+                just have to load the program, allocate the memory, and run the program.
+            </p>
+            <p>If you remember, the arrays in our kernel were global so they could be accessed by all of the running
+                kernels. This means we must create a space for them in our context. Memory in an OpenCL context is
+                represented in LWJGL by the CLMem class. There are several ways to create this object, some constructors
+                take a buffer of data and copy it and other just take a size argument.
+            </p>
+            <pre class="brush:c">
 //In all these examples I use a null reference for the error IntBuffer. This is only for simplicity's sake.
 //You should add error checking in final release code.
 
@@ -211,23 +313,31 @@ dataBuff.rewind();
 //the method will be copied into the device's memory. LWJGL lets you skip the length argument by using the length of the input buffer as the length.
 CLMem memory2 = CL10.clCreateBuffer(context, CL10.CL_WRITE_ONLY | CL_MEM_COPY_HOST_PTR, dataBuff, null); 
 </pre>
-<p>Now you can give your kernels the data they need, all that remains is to create the kernels themselves, which were explained way back at the beginning of the tutorial. 
-</p><p><br />
-</p>
-<h2><span class="mw-headline" id="Creating_Programs_and_Kernels">Creating Programs and Kernels</span></h2>
-<p>Kernels are the entry points to your OpenCL code, but what about all the other functions and variables you write? Kernels are not the whole story, in fact they are just part of a larger OpenCL program represented by a CLProgram instance. In order to create a program, we need our source which means we will have to load a file. (You do not have to store the kernel's source code in a file, but I like to). Here is a method that will load a given file from your application's directory and return a String containing the text in the file. Also the kernel code is repeated here for ease of reference.
-</p>
-<pre class="brush:c">
+            <p>Now you can give your kernels the data they need, all that remains is to create the kernels themselves,
+                which were explained way back at the beginning of the tutorial.
+            </p>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="Creating_Programs_and_Kernels">Creating Programs and Kernels</span></h2>
+            <p>Kernels are the entry points to your OpenCL code, but what about all the other functions and variables
+                you write? Kernels are not the whole story, in fact they are just part of a larger OpenCL program
+                represented by a CLProgram instance. In order to create a program, we need our source which means we
+                will have to load a file. (You do not have to store the kernel's source code in a file, but I like to).
+                Here is a method that will load a given file from your application's directory and return a String
+                containing the text in the file. Also the kernel code is repeated here for ease of reference.
+            </p>
+            <pre class="brush:c">
 _kernel void sum(_global const float* a, _global const float* b, _global float* result, int const size) {
     const int itemId = get_global_id(0); 
     if(itemId &lt; size) {
         result[itemId] = a[itemId] + b[itemId];
     }
 }    
-</pre> 
-<p>IO is pretty boring at times. Use your own method if you want, or just type the kernel as a string straight into your application source.
-</p>
-<pre class="brush:c">
+</pre>
+            <p>IO is pretty boring at times. Use your own method if you want, or just type the kernel as a string
+                straight into your application source.
+            </p>
+            <pre class="brush:c">
 	public static String loadText(String name) {
 		if(!name.endsWith(&quot;.cls&quot;)) {
 			name += &quot;.cls&quot;;
@@ -275,9 +385,9 @@ _kernel void sum(_global const float* a, _global const float* b, _global float* 
 		return resultString;
 	}
 </pre>
-<p>Now we can create our OpenCL program.
-</p>
-<pre class="brush:c">
+            <p>Now we can create our OpenCL program.
+            </p>
+            <pre class="brush:c">
 //The first argument is the context which we've already created. The second is the source as a String, replace this with whatever 
 //method you are using. The last argument is the error IntBuffer, null for simplicity's sake...
 CLProgram sumProgram = CL10.clCreateProgramWithSource(context, loadText(&quot;sumKernel.cls&quot;), null);
@@ -292,22 +402,28 @@ int error = CL10.clBuildProgram(sumProgram, devices.get(0), &quot;&quot;, null);
 //errors that may have occurred. You should check that the returned value equals CL10.CL_SUCCESS.
 Util.checkCLError(error); //Handle any exceptions thrown.
 </pre>
-<p>We have a nice little program, but it is still useless without entry points, so we go on to creating a kernel for our program. 
-Kernels in LWJGL are represented by an instance of CLKernel, and they are obtained like so:
-</p>
-<pre class="brush:c">
+            <p>We have a nice little program, but it is still useless without entry points, so we go on to creating a
+                kernel for our program.
+                Kernels in LWJGL are represented by an instance of CLKernel, and they are obtained like so:
+            </p>
+            <pre class="brush:c">
 //sumProgram is just the program we have created and built. The next String argument is the name of the Kernel in your source. If 
 //the Kernel declaration was: _kernel void addTogetherAFewArraysOfFloats(), then we would put &quot;addTogetherAFewArraysOfFloats&quot; here.
 //The last argument is again an error IntBuffer.
 CLKernel sumKernel = CL10.clCreateKernel(sumProgram, &quot;sum&quot;, null);
 </pre>
-<p>Now what we have a full OpenCL context with devices and a command queue, a simple program, and a kernel to launch that program with. All we have to do now is push the run button, sort of.
-</p><p><br />
-</p>
-<h2><span class="mw-headline" id="Setting_Arguments_For_Kernels">Setting Arguments For Kernels</span></h2>
-<p>Remember back to when we created CLMem objects to pass memory onto the program, well we just have to tell the kernel where that memory is, and there is a nice and easy way of doing this in LWJGL. In this example I will first create the pieces of memory necessary for our kernel (the two inputs, the result, and the size) then tell the kernel about them.
-</p>
-<pre class="brush:c">
+            <p>Now what we have a full OpenCL context with devices and a command queue, a simple program, and a kernel
+                to launch that program with. All we have to do now is push the run button, sort of.
+            </p>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="Setting_Arguments_For_Kernels">Setting Arguments For Kernels</span></h2>
+            <p>Remember back to when we created CLMem objects to pass memory onto the program, well we just have to tell
+                the kernel where that memory is, and there is a nice and easy way of doing this in LWJGL. In this
+                example I will first create the pieces of memory necessary for our kernel (the two inputs, the result,
+                and the size) then tell the kernel about them.
+            </p>
+            <pre class="brush:c">
 final int size = 100; //Can be whatever size you want.
 IntBuffer errorBuff = BufferUtils.createIntBuffer(1); // Error buffer
 
@@ -339,9 +455,9 @@ Util.checkCLError(errorBuff.get(0));
 CLMem resultMemory = CL10.clCreateBuffer(context, CL10.CL_MEM_READ_ONLY, size*4, errorBuff);
 Util.checkCLError(errorBuff.get(0));
 </pre>
-<p>Now let's set the kernel's parameters by passing our newly created OpenCL memory objects to the kernel.
-</p>
-<pre class="brush:c">
+            <p>Now let's set the kernel's parameters by passing our newly created OpenCL memory objects to the kernel.
+            </p>
+            <pre class="brush:c">
 // Set the first kernel parameter, &quot;_global const float* a&quot;, to point to the first buffer of numbers
 sumKernel.setArg(0, aMemory);
 // Set the second kernel parameter, &quot;_global const float* b&quot;, to point to the second buffer of numbers
@@ -352,13 +468,19 @@ sumKernel.setArg(2, resultMemory);
 // Since size is just a single constant variable, we will pass it straight into the kernel rather than through a CLMem object.
 sumKernel.setArg(3, size);
 </pre>
-<p><br />
-</p>
-<h2><span class="mw-headline" id="Running_Kernels">Running Kernels</span></h2>
-<p>Since memory is defined within a context, rather than a device or program, multiple kernels can share memory and work on it individually. Just one of the joys of OpenCL. 
-Now we want to run the kernel and create some work items. If you don't remember what a work item is, just jump to the start of this tutorial and read the note about work items. The first thing we must do is specify how many dimensions we want to use and how many work items we want to create. Optionally we can also set how we want our work groups organized, which can be little complex to begin with, so to make it simple we will only be working in 1 dimension. Now we setup the number of work units to execute and run our kernel. 
-</p>
-<pre class="brush:c">
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="Running_Kernels">Running Kernels</span></h2>
+            <p>Since memory is defined within a context, rather than a device or program, multiple kernels can share
+                memory and work on it individually. Just one of the joys of OpenCL.
+                Now we want to run the kernel and create some work items. If you don't remember what a work item is,
+                just jump to the start of this tutorial and read the note about work items. The first thing we must do
+                is specify how many dimensions we want to use and how many work items we want to create. Optionally we
+                can also set how we want our work groups organized, which can be little complex to begin with, so to
+                make it simple we will only be working in 1 dimension. Now we setup the number of work units to execute
+                and run our kernel.
+            </p>
+            <pre class="brush:c">
 final int dimensions = 1;
 PointerBuffer globalWorkSize = BufferUtils.createPointerBuffer(dimensions); //In here we put the total number of work items we want in each dimension.
 globalWorkSize.put(0, size); //Size is a variable we defined a while back showing how many elements are in our arrays.
@@ -378,14 +500,29 @@ CL10.clEnqueueNDRangeKernel(queue, sumKernel, dimensions, null, globalWorkSize, 
 //objects (cl_event in original OpenCL). Look up OpenCL events if you want. 
 CL10.clFinish(queue);
 </pre>
-<p>This created the correct number of work items in 1 dimension running the sum kernel, then wait for them to finish. If you remember work items are also organized into work groups. We set this up with localWorkSize. This is a PointerBuffer of length 'dimensions' that tells OpenCL how many work items are in each dimension of each work group. There are a few things we must remember. Each dimension of the localWorkSize must me a factor of the corresponding dimension of globalWorkSize. Imagine we wanted to create 125 work items in 3 dimensions. globalWorkSize could be 5, 5, 5. Since 5 * 5 * 5 = 125. However, 5's only factors are 5 and 1, so you would either have to have localWorkSize also being 5, 5, 5, which would mean having 1 work group of size 125. Or you could have localWorkSize 1, 1, 1 meaning you would have 125 work groups of size 1. There are other ways of doing it and you do not need to create the exact number of workItems. If you leave localWorkSize null as in the example, then OpenCL will work it out for you.
-</p><p>If all has gone well we have now run our kernel and the result should be in memory, but how to get at it.
-</p><p><br />
-</p>
-<h2><span class="mw-headline" id="Reading_and_Writing_to_Memory">Reading and Writing to Memory</span></h2>
-<p>This is another job for the command queue. Since memory is in a context and not a program, the command queue you use doesn't really matter provided it is in the same context, but why bother having two different queues, since we must still wait for the first to finish working before you can read the memory to avoid memory inconsistency errors.
-</p>
-<pre class="brush:c">
+            <p>This created the correct number of work items in 1 dimension running the sum kernel, then wait for them
+                to finish. If you remember work items are also organized into work groups. We set this up with
+                localWorkSize. This is a PointerBuffer of length 'dimensions' that tells OpenCL how many work items are
+                in each dimension of each work group. There are a few things we must remember. Each dimension of the
+                localWorkSize must me a factor of the corresponding dimension of globalWorkSize. Imagine we wanted to
+                create 125 work items in 3 dimensions. globalWorkSize could be 5, 5, 5. Since 5 * 5 * 5 = 125. However,
+                5's only factors are 5 and 1, so you would either have to have localWorkSize also being 5, 5, 5, which
+                would mean having 1 work group of size 125. Or you could have localWorkSize 1, 1, 1 meaning you would
+                have 125 work groups of size 1. There are other ways of doing it and you do not need to create the exact
+                number of workItems. If you leave localWorkSize null as in the example, then OpenCL will work it out for
+                you.
+            </p>
+            <p>If all has gone well we have now run our kernel and the result should be in memory, but how to get at it.
+            </p>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="Reading_and_Writing_to_Memory">Reading and Writing to Memory</span></h2>
+            <p>This is another job for the command queue. Since memory is in a context and not a program, the command
+                queue you use doesn't really matter provided it is in the same context, but why bother having two
+                different queues, since we must still wait for the first to finish working before you can read the
+                memory to avoid memory inconsistency errors.
+            </p>
+            <pre class="brush:c">
 FloatBuffer writeTo = BufferUtils.createFloatBuffer(size); //Remember size is the number of elements.
 //The first argument, 'queue' is the CLCommandQueue to use. 'resultMemory' is the CLMem to read. (It must be CL_MEM_READ_ONLY or CL_MEM_READ_WRITE).
 //The next value (CL_TRUE) tells OpenCL whether the command is blocking or not. A blocking command will return only after the operation is complete and you can use the result immediately.
@@ -395,19 +532,22 @@ FloatBuffer writeTo = BufferUtils.createFloatBuffer(size); //Remember size is th
 //It must be the correct length since LWJGL uses the buffer's length to know how much data to read. Since this a blocking read, clFinish does not have to be called and the result can be used immediately. 
 CL10.clEnqueueReadBuffer(queue, resultMemory, CL10.CL_TRUE, 0, writeTo, null, null);
 </pre>
-<p>And if you want to write into a CLMem object.
-</p>
-<pre class="brush:c">
+            <p>And if you want to write into a CLMem object.
+            </p>
+            <pre class="brush:c">
 //This is exactly the same as reading. 'data' is is a FloatBuffer containing the data you want written. Again it can be any type of buffer but must be the correct length.
 CL10.clEnqueueWriteBuffer(queue, memory, CL10.CL_TRUE, 0, data, null, null); 
 </pre>
-<p><br />
-</p>
-<h2><span class="mw-headline" id="Cleaning_up_After_Ourselves">Cleaning up After Ourselves</span></h2>
-<p>This should be done at the very end of the program, or after you have no further use for OpenCL. If you are never going to use aparticular program again you could just release it.
-The only CLObjects we have created that need destroying are: the kernel, the program, the memory, the command queue and the context. Also since we are in LWJGL we should also call the CL.destroy() command. The code to do this is:
-</p>
-<pre class="brush:c">
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="Cleaning_up_After_Ourselves">Cleaning up After Ourselves</span></h2>
+            <p>This should be done at the very end of the program, or after you have no further use for OpenCL. If you
+                are never going to use aparticular program again you could just release it.
+                The only CLObjects we have created that need destroying are: the kernel, the program, the memory, the
+                command queue and the context. Also since we are in LWJGL we should also call the CL.destroy() command.
+                The code to do this is:
+            </p>
+            <pre class="brush:c">
 CL10.clReleaseKernel(sumKernel);
 CL10.clReleaseProgram(sumProgram);
 
@@ -419,12 +559,12 @@ CL10.clReleaseCommandQueue(queue);
 CL10.clReleaseContext(context);
 CL.destroy();
 </pre>
-<p><br />
-</p>
-<h2><span class="mw-headline" id="The_Full_Code">The Full Code</span></h2>
-<p>This is the entire class file of the code I have written here.
-</p>
-<pre class="brush:c">
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="The_Full_Code">The Full Code</span></h2>
+            <p>This is the entire class file of the code I have written here.
+            </p>
+            <pre class="brush:c">
 import java.util.List;
 import java.io.BufferedReader;
 import java.io.File;
@@ -605,9 +745,9 @@ public class MyClClass {
 	}
 }
 </pre>
-<p>The OpenCL kernel source file ("sumKernel.cls") should look like this if you save it in a text file. 
-</p>
-<pre class="brush:c">
+            <p>The OpenCL kernel source file ("sumKernel.cls") should look like this if you save it in a text file.
+            </p>
+            <pre class="brush:c">
 kernel void sum(global const float* a, global const float* b, global float* result, int const size) {
    const int itemId = get_global_id(0); 
       if(itemId &lt; size) {
@@ -615,144 +755,203 @@ kernel void sum(global const float* a, global const float* b, global float* resu
    }
 }
 </pre>
-<p>Now you should be able to write your own OpenCL kernels which do something useful, create a cl context to run them in, pass them the correct arguments, set them and read or write any extra data you need. Now go and do thou likewise.
-</p>
-<!-- 
-NewPP limit report
-CPU time usage: 0.020 seconds
-Real time usage: 0.022 seconds
-Preprocessor visited node count: 216/1000000
-Preprocessor generated node count: 464/1000000
-Post‐expand include size: 0/2097152 bytes
-Template argument size: 0/2097152 bytes
-Highest expansion depth: 2/40
-Expensive parser function count: 0/100
--->
+            <p>Now you should be able to write your own OpenCL kernels which do something useful, create a cl context to
+                run them in, pass them the correct arguments, set them and read or write any extra data you need. Now go
+                and do thou likewise.
+            </p>
+            <!--
+            NewPP limit report
+            CPU time usage: 0.020 seconds
+            Real time usage: 0.022 seconds
+            Preprocessor visited node count: 216/1000000
+            Preprocessor generated node count: 464/1000000
+            Post‐expand include size: 0/2097152 bytes
+            Template argument size: 0/2097152 bytes
+            Highest expansion depth: 2/40
+            Expensive parser function count: 0/100
+            -->
 
-<!-- 
-Transclusion expansion time report (%,ms,calls,template)
-100.00%    0.000      1 - -total
--->
+            <!--
+            Transclusion expansion time report (%,ms,calls,template)
+            100.00%    0.000      1 - -total
+            -->
 
-<!-- Saved in parser cache with key wiki-mw_:pcache:idhash:183-0!*!*!!en!*!* and timestamp 20161023213513 and revision id 986
- -->
-</div>									<div class="printfooter">
-						Retrieved from "<a dir="ltr" href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;oldid=986">http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;oldid=986</a>"					</div>
-													<div id='catlinks' class='catlinks catlinks-allhidden'></div>												<div class="visualClear"></div>
-							</div>
-		</div>
-		<div id="mw-navigation">
-			<h2>Navigation menu</h2>
+            <!-- Saved in parser cache with key wiki-mw_:pcache:idhash:183-0!*!*!!en!*!* and timestamp 20161023213513 and revision id 986
+             -->
+        </div>
+        <div class="printfooter">
+            Retrieved from "<a dir="ltr" href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;oldid=986">http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;oldid=986</a>"
+        </div>
+        <div id='catlinks' class='catlinks catlinks-allhidden'></div>
+        <div class="visualClear"></div>
+    </div>
+</div>
+<div id="mw-navigation">
+    <h2>Navigation menu</h2>
 
-			<div id="mw-head">
-									<div id="p-personal" role="navigation" class="" aria-labelledby="p-personal-label">
-						<h3 id="p-personal-label">Personal tools</h3>
-						<ul>
-							<li id="pt-login"><a href="http://wiki.lwjgl.org/index.php?title=Special:UserLogin&amp;returnto=OpenCL+in+LWJGL" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in</a></li>						</ul>
-					</div>
-									<div id="left-navigation">
-										<div id="p-namespaces" role="navigation" class="vectorTabs" aria-labelledby="p-namespaces-label">
-						<h3 id="p-namespaces-label">Namespaces</h3>
-						<ul>
-															<li  id="ca-nstab-main" class="selected"><span><a href="OpenCL_in_LWJGL.html"  title="View the content page [c]" accesskey="c">Page</a></span></li>
-															<li  id="ca-talk" class="new"><span><a href="http://wiki.lwjgl.org/index.php?title=Talk:OpenCL_in_LWJGL&amp;action=edit&amp;redlink=1"  title="Discussion about the content page [t]" accesskey="t">Discussion</a></span></li>
-													</ul>
-					</div>
-										<div id="p-variants" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-variants-label">
-												<h3 id="p-variants-label"><span>Variants</span><a href="OpenCL_in_LWJGL.html#"></a></h3>
+    <div id="mw-head">
+        <div id="p-personal" role="navigation" class="" aria-labelledby="p-personal-label">
+            <h3 id="p-personal-label">Personal tools</h3>
+            <ul>
+                <li id="pt-login"><a
+                        href="http://wiki.lwjgl.org/index.php?title=Special:UserLogin&amp;returnto=OpenCL+in+LWJGL"
+                        title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in</a>
+                </li>
+            </ul>
+        </div>
+        <div id="left-navigation">
+            <div id="p-namespaces" role="navigation" class="vectorTabs" aria-labelledby="p-namespaces-label">
+                <h3 id="p-namespaces-label">Namespaces</h3>
+                <ul>
+                    <li id="ca-nstab-main" class="selected"><span><a href="OpenCL_in_LWJGL.html"
+                                                                     title="View the content page [c]" accesskey="c">Page</a></span>
+                    </li>
+                    <li id="ca-talk" class="new"><span><a
+                            href="http://wiki.lwjgl.org/index.php?title=Talk:OpenCL_in_LWJGL&amp;action=edit&amp;redlink=1"
+                            title="Discussion about the content page [t]" accesskey="t">Discussion</a></span></li>
+                </ul>
+            </div>
+            <div id="p-variants" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-variants-label">
+                <h3 id="p-variants-label"><span>Variants</span><a href="OpenCL_in_LWJGL.html#"></a></h3>
 
-						<div class="menu">
-							<ul>
-															</ul>
-						</div>
-					</div>
-									</div>
-				<div id="right-navigation">
-										<div id="p-views" role="navigation" class="vectorTabs" aria-labelledby="p-views-label">
-						<h3 id="p-views-label">Views</h3>
-						<ul>
-															<li id="ca-view" class="selected"><span><a href="OpenCL_in_LWJGL.html" >Read</a></span></li>
-															<li id="ca-viewsource"><span><a href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;action=edit"  title="This page is protected.&#10;You can view its source [e]" accesskey="e">View source</a></span></li>
-															<li id="ca-history" class="collapsible"><span><a href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;action=history"  title="Past revisions of this page [h]" accesskey="h">View history</a></span></li>
-													</ul>
-					</div>
-										<div id="p-cactions" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-cactions-label">
-						<h3 id="p-cactions-label"><span>More</span><a href="OpenCL_in_LWJGL.html#"></a></h3>
+                <div class="menu">
+                    <ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="right-navigation">
+            <div id="p-views" role="navigation" class="vectorTabs" aria-labelledby="p-views-label">
+                <h3 id="p-views-label">Views</h3>
+                <ul>
+                    <li id="ca-view" class="selected"><span><a href="OpenCL_in_LWJGL.html">Read</a></span></li>
+                    <li id="ca-viewsource"><span><a
+                            href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;action=edit"
+                            title="This page is protected.&#10;You can view its source [e]"
+                            accesskey="e">View source</a></span></li>
+                    <li id="ca-history" class="collapsible"><span><a
+                            href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;action=history"
+                            title="Past revisions of this page [h]" accesskey="h">View history</a></span></li>
+                </ul>
+            </div>
+            <div id="p-cactions" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-cactions-label">
+                <h3 id="p-cactions-label"><span>More</span><a href="OpenCL_in_LWJGL.html#"></a></h3>
 
-						<div class="menu">
-							<ul>
-															</ul>
-						</div>
-					</div>
-										<div id="p-search" role="search">
-						<h3>
-							<label for="searchInput">Search</label>
-						</h3>
+                <div class="menu">
+                    <ul>
+                    </ul>
+                </div>
+            </div>
+            <div id="p-search" role="search">
+                <h3>
+                    <label for="searchInput">Search</label>
+                </h3>
 
-						<form action="http://wiki.lwjgl.org/index.php" id="searchform">
-														<div id="simpleSearch">
-															<input type="search" name="search" placeholder="Search" title="Search LWJGL [f]" accesskey="f" id="searchInput" /><input type="hidden" value="Special:Search" name="title" /><input type="submit" name="fulltext" value="Search" title="Search the pages for this text" id="mw-searchButton" class="searchButton mw-fallbackSearchButton" /><input type="submit" name="go" value="Go" title="Go to a page with this exact name if exists" id="searchButton" class="searchButton" />								</div>
-						</form>
-					</div>
-									</div>
-			</div>
-			<div id="mw-panel">
-				<div id="p-logo" role="banner"><a class="mw-wiki-logo" href="../index.html"  title="Visit the main page"></a></div>
-						<div class="portal" role="navigation" id='p-navigation' aria-labelledby='p-navigation-label'>
-			<h3 id='p-navigation-label'>Navigation</h3>
+                <form action="http://wiki.lwjgl.org/index.php" id="searchform">
+                    <div id="simpleSearch">
+                        <input type="search" name="search" placeholder="Search" title="Search LWJGL [f]" accesskey="f"
+                               id="searchInput"/><input type="hidden" value="Special:Search" name="title"/><input
+                            type="submit" name="fulltext" value="Search" title="Search the pages for this text"
+                            id="mw-searchButton" class="searchButton mw-fallbackSearchButton"/><input type="submit"
+                                                                                                      name="go"
+                                                                                                      value="Go"
+                                                                                                      title="Go to a page with this exact name if exists"
+                                                                                                      id="searchButton"
+                                                                                                      class="searchButton"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="mw-panel">
+        <div id="p-logo" role="banner"><a class="mw-wiki-logo" href="../index.html" title="Visit the main page"></a>
+        </div>
+        <div class="portal" role="navigation" id='p-navigation' aria-labelledby='p-navigation-label'>
+            <h3 id='p-navigation-label'>Navigation</h3>
 
-			<div class="body">
-									<ul>
-													<li id="n-mainpage-description"><a href="../index.html" title="Visit the main page [z]" accesskey="z">Main page</a></li>
-													<li id="n-portal"><a href="http://wiki.lwjgl.org/wiki/LWJGL:Community_portal" title="About the project, what you can do, where to find things">Community portal</a></li>
-													<li id="n-currentevents"><a href="http://wiki.lwjgl.org/wiki/LWJGL:Current_events" title="Find background information on current events">Current events</a></li>
-													<li id="n-recentchanges"><a href="http://wiki.lwjgl.org/wiki/Special:RecentChanges" title="A list of recent changes in the wiki [r]" accesskey="r">Recent changes</a></li>
-													<li id="n-randompage"><a href="http://wiki.lwjgl.org/wiki/Special:Random" title="Load a random page [x]" accesskey="x">Random page</a></li>
-													<li id="n-help"><a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents" title="The place to find out">Help</a></li>
-											</ul>
-							</div>
-		</div>
-			<div class="portal" role="navigation" id='p-tb' aria-labelledby='p-tb-label'>
-			<h3 id='p-tb-label'>Tools</h3>
+            <div class="body">
+                <ul>
+                    <li id="n-mainpage-description"><a href="../index.html" title="Visit the main page [z]"
+                                                       accesskey="z">Main page</a></li>
+                    <li id="n-portal"><a href="http://wiki.lwjgl.org/wiki/LWJGL:Community_portal"
+                                         title="About the project, what you can do, where to find things">Community
+                        portal</a></li>
+                    <li id="n-currentevents"><a href="http://wiki.lwjgl.org/wiki/LWJGL:Current_events"
+                                                title="Find background information on current events">Current events</a>
+                    </li>
+                    <li id="n-recentchanges"><a href="http://wiki.lwjgl.org/wiki/Special:RecentChanges"
+                                                title="A list of recent changes in the wiki [r]" accesskey="r">Recent
+                        changes</a></li>
+                    <li id="n-randompage"><a href="http://wiki.lwjgl.org/wiki/Special:Random"
+                                             title="Load a random page [x]" accesskey="x">Random page</a></li>
+                    <li id="n-help"><a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents"
+                                       title="The place to find out">Help</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="portal" role="navigation" id='p-tb' aria-labelledby='p-tb-label'>
+            <h3 id='p-tb-label'>Tools</h3>
 
-			<div class="body">
-									<ul>
-													<li id="t-whatlinkshere"><a href="./Special:WhatLinksHere/OpenCL_in_LWJGL.html" title="A list of all wiki pages that link here [j]" accesskey="j">What links here</a></li>
-													<li id="t-recentchangeslinked"><a href="http://wiki.lwjgl.org/wiki/Special:RecentChangesLinked/OpenCL_in_LWJGL" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li>
-													<li id="t-specialpages"><a href="http://wiki.lwjgl.org/wiki/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q">Special pages</a></li>
-													<li id="t-print"><a href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;printable=yes" rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable version</a></li>
-													<li id="t-permalink"><a href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;oldid=986" title="Permanent link to this revision of the page">Permanent link</a></li>
-													<li id="t-info"><a href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;action=info" title="More information about this page">Page information</a></li>
-											</ul>
-							</div>
-		</div>
-				</div>
-		</div>
-		<div id="footer" role="contentinfo">
-							<ul id="footer-info">
-											<li id="footer-info-lastmod"> This page was last modified on 24 May 2014, at 23:16.</li>
-											<li id="footer-info-copyright">Content is available under <a class="external" rel="nofollow" href="http://creativecommons.org/licenses/publicdomain/">Public Domain</a> unless otherwise noted.</li>
-									</ul>
-							<ul id="footer-places">
-											<li id="footer-places-privacy"><a href="http://wiki.lwjgl.org/wiki/LWJGL:Privacy_policy" title="LWJGL:Privacy policy">Privacy policy</a></li>
-											<li id="footer-places-about"><a href="./LWJGL:About.html" title="LWJGL:About">About LWJGL</a></li>
-											<li id="footer-places-disclaimer"><a href="http://wiki.lwjgl.org/wiki/LWJGL:General_disclaimer" title="LWJGL:General disclaimer">Disclaimers</a></li>
-									</ul>
-										<ul id="footer-icons" class="noprint">
-											<li id="footer-copyrightico">
-															<a href="http://creativecommons.org/licenses/publicdomain/"><img src="../resources/assets/licenses/public-domain.png" alt="Public Domain" width="88" height="31" /></a>
-													</li>
-											<li id="footer-poweredbyico">
-															<a href="http://www.mediawiki.org/"><img src="../resources/assets/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" srcset="../resources/assets/poweredby_mediawiki_132x47.png 1.5x, ../resources/assets/poweredby_mediawiki_176x62.png 2x" width="88" height="31" /></a>
-													</li>
-									</ul>
-						<div style="clear:both"></div>
-		</div>
-		<script>if(window.jQuery)jQuery.ready();</script><script>if(window.mw){
-mw.loader.state({"site":"ready","user":"ready","user.groups":"ready"});
+            <div class="body">
+                <ul>
+                    <li id="t-whatlinkshere"><a href="./Special:WhatLinksHere/OpenCL_in_LWJGL.html"
+                                                title="A list of all wiki pages that link here [j]" accesskey="j">What
+                        links here</a></li>
+                    <li id="t-recentchangeslinked"><a
+                            href="http://wiki.lwjgl.org/wiki/Special:RecentChangesLinked/OpenCL_in_LWJGL"
+                            title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a>
+                    </li>
+                    <li id="t-specialpages"><a href="http://wiki.lwjgl.org/wiki/Special:SpecialPages"
+                                               title="A list of all special pages [q]" accesskey="q">Special pages</a>
+                    </li>
+                    <li id="t-print"><a href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;printable=yes"
+                                        rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable
+                        version</a></li>
+                    <li id="t-permalink"><a href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;oldid=986"
+                                            title="Permanent link to this revision of the page">Permanent link</a></li>
+                    <li id="t-info"><a href="http://wiki.lwjgl.org/index.php?title=OpenCL_in_LWJGL&amp;action=info"
+                                       title="More information about this page">Page information</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer" role="contentinfo">
+    <ul id="footer-info">
+        <li id="footer-info-lastmod"> This page was last modified on 24 May 2014, at 23:16.</li>
+        <li id="footer-info-copyright">Content is available under <a class="external" rel="nofollow"
+                                                                     href="http://creativecommons.org/licenses/publicdomain/">Public
+            Domain</a> unless otherwise noted.
+        </li>
+    </ul>
+    <ul id="footer-places">
+        <li id="footer-places-privacy"><a href="http://wiki.lwjgl.org/wiki/LWJGL:Privacy_policy"
+                                          title="LWJGL:Privacy policy">Privacy policy</a></li>
+        <li id="footer-places-about"><a href="./LWJGL:About.html" title="LWJGL:About">About LWJGL</a></li>
+        <li id="footer-places-disclaimer"><a href="http://wiki.lwjgl.org/wiki/LWJGL:General_disclaimer"
+                                             title="LWJGL:General disclaimer">Disclaimers</a></li>
+    </ul>
+    <ul id="footer-icons" class="noprint">
+        <li id="footer-copyrightico">
+            <a href="http://creativecommons.org/licenses/publicdomain/"><img
+                    src="../resources/assets/licenses/public-domain.png" alt="Public Domain" width="88"
+                    height="31"/></a>
+        </li>
+        <li id="footer-poweredbyico">
+            <a href="http://www.mediawiki.org/"><img src="../resources/assets/poweredby_mediawiki_88x31.png"
+                                                     alt="Powered by MediaWiki"
+                                                     srcset="../resources/assets/poweredby_mediawiki_132x47.png 1.5x, ../resources/assets/poweredby_mediawiki_176x62.png 2x"
+                                                     width="88" height="31"/></a>
+        </li>
+    </ul>
+    <div style="clear:both"></div>
+</div>
+<script>if (window.jQuery) jQuery.ready();</script>
+<script>if (window.mw) {
+    mw.loader.state({"site": "ready", "user": "ready", "user.groups": "ready"});
 }</script>
-<script>if(window.mw){
-mw.loader.load(["mediawiki.toc","mediawiki.action.view.postEdit","mediawiki.user","mediawiki.page.ready","mediawiki.searchSuggest"],null,true);
+<script>if (window.mw) {
+    mw.loader.load(["mediawiki.toc", "mediawiki.action.view.postEdit", "mediawiki.user", "mediawiki.page.ready", "mediawiki.searchSuggest"], null, true);
 }</script>
 <link rel="stylesheet" href="../extensions/Syntax/styles/shCore.css"></link>
 
@@ -768,12 +967,16 @@ mw.loader.load(["mediawiki.toc","mediawiki.action.view.postEdit","mediawiki.user
 
 <script async src="http://www.google-analytics.com/analytics.js"></script>
 <script>
-window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', 'UA-83518-1', 'auto');
-ga('require', 'displayfeatures');
-ga('send', 'pageview');
-</script><script>if(window.mw){
-mw.config.set({"wgBackendResponseTime":92});
+    window.ga = window.ga || function () {
+        (ga.q = ga.q || []).push(arguments)
+    };
+    ga.l = +new Date;
+    ga('create', 'UA-83518-1', 'auto');
+    ga('require', 'displayfeatures');
+    ga('send', 'pageview');
+</script>
+<script>if (window.mw) {
+    mw.config.set({"wgBackendResponseTime": 92});
 }</script>
-	</body>
+</body>
 </html>

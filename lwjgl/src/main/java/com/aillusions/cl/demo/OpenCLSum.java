@@ -1,7 +1,5 @@
 package com.aillusions.cl.demo;
 
-import org.lwjgl.opencl.CL;
-
 /**
  * @author aillusions
  */
