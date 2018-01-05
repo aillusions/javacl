@@ -49,6 +49,7 @@ public class Main {
 
         System.out.println();
 
+        int numDevicesTested = 0;
         for (int p = 0; p < platforms.capacity(); p++) {
             long platform = platforms.get(p);
             ctxProps.put(1, platform);
@@ -59,7 +60,7 @@ public class Main {
             PointerBuffer devices = stack.mallocPointer(pi.get(0));
             checkCLError(clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, devices, (IntBuffer) null));
 
-            int numDevicesTested = 0;
+
             for (int d = 0; d < devices.capacity(); d++) {
                 long device = devices.get(d);
 
@@ -70,6 +71,7 @@ public class Main {
                 if (numDevicesTested > 0
                         || !caps.OpenCL11
                         || deviceName.contains("CPU")
+                        || deviceName.contains("Intel")
                         || deviceName.contains("Iris")) {
                     continue;
                 }
