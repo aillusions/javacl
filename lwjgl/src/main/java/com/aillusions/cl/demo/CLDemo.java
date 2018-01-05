@@ -266,7 +266,7 @@ public final class CLDemo {
         System.out.println("\t" + param_name + " = " + getDeviceInfoStringUTF8(device, param));
     }
 
-    private static String getEventStatusName(int status) {
+    public static String getEventStatusName(int status) {
         switch (status) {
             case CL_QUEUED:
                 return "CL_QUEUED";

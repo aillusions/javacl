@@ -1,25 +1,25 @@
 package com.aillusions.cl;
 
 import com.aillusions.cl.demo.UsefulDevice;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL;
-import org.lwjgl.opencl.CLBufferRegion;
-import org.lwjgl.opencl.CLCapabilities;
-import org.lwjgl.opencl.CLMemObjectDestructorCallback;
+import org.lwjgl.opencl.*;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import static com.aillusions.cl.demo.CLDemo.printDeviceInfo;
+import static com.aillusions.cl.demo.CLDemo.getEventStatusName;
 import static com.aillusions.cl.demo.InfoUtil.*;
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opencl.CL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.system.MemoryUtil.memAddress;
+import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.Pointer.POINTER_SIZE;
 
 /**
  * https://www.lwjgl.org/customize
@@ -52,6 +52,15 @@ public class Main {
             System.out.println("Useful device: " + usDev.toString());
         }
 
+        allocateBuffer(errcode_ret, usDev);
+        execute(errcode_ret, usDev);
+
+        usDev.clear();
+    }
+
+    public static void allocateBuffer(IntBuffer errcode_ret, UsefulDevice usDev) {
+
+        long device = usDev.getDevice();
         long context = usDev.getContext();
 
         int bufferSize = Integer.MAX_VALUE;
@@ -116,9 +125,8 @@ public class Main {
         errcode = clReleaseMemObject(buffer);
         checkCLError(errcode);
 
-        // mem object destructor callbacks are called asynchronously on Nvidia
-
         try {
+            // mem object destructor callbacks are called asynchronously on Nvidia
             destructorLatch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -128,8 +136,79 @@ public class Main {
 
         bufferCB2.free();
         bufferCB1.free();
+    }
 
-        usDev.clear();
+    public static void execute(IntBuffer errcode_ret, UsefulDevice usDev) {
+
+        long device = usDev.getDevice();
+        long context = usDev.getContext();
+
+        int errcode;
+
+        long exec_caps = getDeviceInfoLong(device, CL_DEVICE_EXECUTION_CAPABILITIES);
+        if ((exec_caps & CL_EXEC_NATIVE_KERNEL) != CL_EXEC_NATIVE_KERNEL) {
+            System.out.println("No native kernel caps.");
+            return;
+        }
+
+        System.out.println("\t\t-TRYING TO EXEC NATIVE KERNEL-");
+        long queue = clCreateCommandQueue(context, device, NULL, errcode_ret);
+
+        PointerBuffer ev = BufferUtils.createPointerBuffer(1);
+
+        ByteBuffer kernelArgs = BufferUtils.createByteBuffer(4);
+        kernelArgs.putInt(0, 1337);
+
+        CLNativeKernel kernel;
+        errcode = clEnqueueNativeKernel(queue, kernel = CLNativeKernel.create(
+                args -> System.out.println("\t\tKERNEL EXEC argument: " + memByteBuffer(args, 4).getInt(0) + ", should be 1337")
+        ), kernelArgs, null, null, null, ev);
+        checkCLError(errcode);
+
+        long e = ev.get(0);
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        CLEventCallback eventCB;
+        errcode = clSetEventCallback(e, CL_COMPLETE, eventCB = CLEventCallback.create((event, event_command_exec_status, user_data) -> {
+            System.out.println("\t\tEvent callback status: " + getEventStatusName(event_command_exec_status));
+            latch.countDown();
+        }), NULL);
+        checkCLError(errcode);
+
+        try {
+            boolean expired = !latch.await(500, TimeUnit.MILLISECONDS);
+            if (expired) {
+                System.out.println("\t\tKERNEL EXEC FAILED!");
+            }
+        } catch (InterruptedException exc) {
+            exc.printStackTrace();
+        }
+        eventCB.free();
+
+        errcode = clReleaseEvent(e);
+        checkCLError(errcode);
+        kernel.free();
+
+        kernelArgs = BufferUtils.createByteBuffer(POINTER_SIZE * 2);
+
+        kernel = CLNativeKernel.create(args -> {
+        });
+
+        long time = System.nanoTime();
+        int REPEAT = 1000;
+        for (int i = 0; i < REPEAT; i++) {
+            clEnqueueNativeKernel(queue, kernel, kernelArgs, null, null, null, null);
+        }
+        clFinish(queue);
+        time = System.nanoTime() - time;
+
+        System.out.printf("\n\t\tEMPTY NATIVE KERNEL AVG EXEC TIME: %.4fus\n", (double) time / (REPEAT * 1000));
+
+        errcode = clReleaseCommandQueue(queue);
+        checkCLError(errcode);
+        kernel.free();
+
     }
 
     public static UsefulDevice getUsefulDevice(MemoryStack stack, IntBuffer errcode_ret) {
@@ -176,7 +255,7 @@ public class Main {
 
                 int addressBits = getDeviceInfoInt(device, CL_DEVICE_ADDRESS_BITS);
 
-                printDeviceInfo(device, deviceName + " -->> CL_DEVICE_OPENCL_C_VERSION", CL_DEVICE_OPENCL_C_VERSION);
+                // printDeviceInfo(device, deviceName + " -->> CL_DEVICE_OPENCL_C_VERSION", CL_DEVICE_OPENCL_C_VERSION);
 
                 return new UsefulDevice(platform, device, deviceName, ctxProps, errcode_ret, addressBits);
             }
