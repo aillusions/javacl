@@ -63,8 +63,7 @@ public class Main {
 
     public static void executeKernel(IntBuffer errcode_ret, UsefulDevice usDev) throws IOException {
 
-
-        int n = 100;
+        int n = 10;
 
         float srcArrayA[] = new float[n];
         float srcArrayB[] = new float[n];
@@ -72,7 +71,7 @@ public class Main {
 
         for (int i = 0; i < n; i++) {
             srcArrayA[i] = i;
-            srcArrayB[i] = i;
+            srcArrayB[i] = i * 2;
         }
 
         long device = usDev.getDevice();
@@ -120,9 +119,9 @@ public class Main {
         long clKernel = clCreateKernel(clProgram, "openCLSumK", errcode_ret);
         checkCLError(errcode_ret);
 
-        long bufferArg1 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, n);
-        long bufferArg2 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, n);
-        long bufferArg3 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, n);
+        long bufferArg1 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, srcArrayA);
+        long bufferArg2 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, srcArrayB);
+        long bufferArg3 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, dstArray);
 
         clSetKernelArg1p(clKernel, 0, bufferArg1);
         clSetKernelArg1p(clKernel, 1, bufferArg2);
@@ -132,8 +131,6 @@ public class Main {
 
         PointerBuffer globalWorkSize = BufferUtils.createPointerBuffer(1);
         globalWorkSize.put(0, n);
-
-        //PointerBuffer localWorkSize = BufferUtils.createPointerBuffer(1);
 
         errcode = clEnqueueNDRangeKernel(
                 clQueue,
@@ -145,17 +142,30 @@ public class Main {
                 null,
                 null);
         checkCLError(errcode);
+
+        CL10.clFinish(clQueue);
+
+        FloatBuffer resultBuff = BufferUtils.createFloatBuffer(n);
+        CL10.clEnqueueReadBuffer(clQueue, bufferArg3, true, 0L, resultBuff, null, null);
+
+        for (int i = 0; i < resultBuff.capacity(); i++) {
+            System.out.println(resultBuff.get(i));
+        }
+
+        // Destroy our kernel and program
+        CL10.clReleaseKernel(clKernel);
+        CL10.clReleaseProgram(clProgram);
+        // Destroy our memory objects
+        CL10.clReleaseMemObject(bufferArg1);
+        CL10.clReleaseMemObject(bufferArg2);
+        CL10.clReleaseMemObject(bufferArg3);
     }
 
-    public static long allocateBufferFor(IntBuffer errcode_ret, UsefulDevice usDev, long flags, int n) {
+    public static long allocateBufferFor(IntBuffer errcode_ret, UsefulDevice usDev, long flags, float[] dataArray) {
 
         long context = usDev.getContext();
 
-        FloatBuffer dataBuff = BufferUtils.createFloatBuffer(n);
-        float[] dataArray = new float[n];
-        for (int i = 0; i < n; i++) {
-            dataArray[i] = i;
-        }
+        FloatBuffer dataBuff = BufferUtils.createFloatBuffer(dataArray.length);
         dataBuff.put(dataArray);
         dataBuff.rewind();
 
