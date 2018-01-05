@@ -1,6 +1,7 @@
 package com.aillusions.cl;
 
-import com.aillusions.cl.demo.UsefulDevice;
+import com.aillusions.cl.device.UsefulDevice;
+import com.aillusions.cl.device.OpenCLDeviceProvider;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opencl.*;
@@ -44,7 +45,7 @@ public class Main {
 
         IntBuffer errcode_ret = stack.callocInt(1);
 
-        UsefulDevice usDev = getUsefulDevice(stack, errcode_ret);
+        UsefulDevice usDev = OpenCLDeviceProvider.getUsefulDevice(stack, errcode_ret);
         if (usDev == null) {
             System.out.println("No useful device found.");
             return;
@@ -53,7 +54,7 @@ public class Main {
         }
 
         allocateBuffer(errcode_ret, usDev);
-        execute(errcode_ret, usDev);
+        executeNativeKernel(errcode_ret, usDev);
 
         usDev.clear();
     }
@@ -138,7 +139,7 @@ public class Main {
         bufferCB1.free();
     }
 
-    public static void execute(IntBuffer errcode_ret, UsefulDevice usDev) {
+    public static void executeNativeKernel(IntBuffer errcode_ret, UsefulDevice usDev) {
 
         long device = usDev.getDevice();
         long context = usDev.getContext();
@@ -211,58 +212,6 @@ public class Main {
 
     }
 
-    public static UsefulDevice getUsefulDevice(MemoryStack stack, IntBuffer errcode_ret) {
-        IntBuffer pi = stack.mallocInt(1);
-        checkCLError(clGetPlatformIDs(null, pi));
-        if (pi.get(0) == 0) {
-            throw new RuntimeException("No OpenCL platforms found.");
-        }
-
-        PointerBuffer platforms = stack.mallocPointer(pi.get(0));
-        checkCLError(clGetPlatformIDs(platforms, (IntBuffer) null));
-
-        PointerBuffer ctxProps = stack.mallocPointer(3);
-        ctxProps
-                .put(0, CL_CONTEXT_PLATFORM)
-                .put(2, 0);
-
-        System.out.println();
-
-        for (int p = 0; p < platforms.capacity(); p++) {
-            long platform = platforms.get(p);
-            ctxProps.put(1, platform);
-
-            CLCapabilities platformCaps = CL.createPlatformCapabilities(platform);
-            checkCLError(clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, null, pi));
-
-            PointerBuffer devices = stack.mallocPointer(pi.get(0));
-            checkCLError(clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, devices, (IntBuffer) null));
-
-
-            for (int d = 0; d < devices.capacity(); d++) {
-                long device = devices.get(d);
-
-                CLCapabilities caps = CL.createDeviceCapabilities(device, platformCaps);
-
-                String deviceName = getDeviceInfoStringUTF8(device, CL_DEVICE_NAME);
-
-                if (!caps.OpenCL11
-                        || deviceName.contains("CPU")
-                        || deviceName.contains("Intel")
-                        || deviceName.contains("Iris")) {
-                    continue;
-                }
-
-                int addressBits = getDeviceInfoInt(device, CL_DEVICE_ADDRESS_BITS);
-
-                // printDeviceInfo(device, deviceName + " -->> CL_DEVICE_OPENCL_C_VERSION", CL_DEVICE_OPENCL_C_VERSION);
-
-                return new UsefulDevice(platform, device, deviceName, ctxProps, errcode_ret, addressBits);
-            }
-        }
-
-        return null;
-    }
 }
 
 

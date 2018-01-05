@@ -1,4 +1,4 @@
-package com.aillusions.cl.demo;
+package com.aillusions.cl.device;
 
 import lombok.Data;
 import lombok.ToString;
