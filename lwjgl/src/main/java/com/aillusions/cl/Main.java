@@ -63,6 +63,18 @@ public class Main {
 
     public static void executeKernel(IntBuffer errcode_ret, UsefulDevice usDev) throws IOException {
 
+
+        int n = 100;
+
+        float srcArrayA[] = new float[n];
+        float srcArrayB[] = new float[n];
+        float dstArray[] = new float[n];
+
+        for (int i = 0; i < n; i++) {
+            srcArrayA[i] = i;
+            srcArrayB[i] = i;
+        }
+
         long device = usDev.getDevice();
         long context = usDev.getContext();
 
@@ -108,21 +120,46 @@ public class Main {
         long clKernel = clCreateKernel(clProgram, "openCLSumK", errcode_ret);
         checkCLError(errcode_ret);
 
-        long bufferArg1 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR);
-        long bufferArg2 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR);
-        long bufferArg3 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR);
+        long bufferArg1 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, n);
+        long bufferArg2 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, n);
+        long bufferArg3 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, n);
 
         clSetKernelArg1p(clKernel, 0, bufferArg1);
         clSetKernelArg1p(clKernel, 1, bufferArg2);
         clSetKernelArg1p(clKernel, 2, bufferArg3);
+
+        long clQueue = clCreateCommandQueue(usDev.getContext(), device, 0, errcode_ret);
+
+        PointerBuffer globalWorkSize = BufferUtils.createPointerBuffer(1);
+        globalWorkSize.put(0, n);
+
+        //PointerBuffer localWorkSize = BufferUtils.createPointerBuffer(1);
+
+        errcode = clEnqueueNDRangeKernel(
+                clQueue,
+                clKernel,
+                1,
+                null,
+                globalWorkSize,
+                null,
+                null,
+                null);
+        checkCLError(errcode);
     }
 
-    public static long allocateBufferFor(IntBuffer errcode_ret, UsefulDevice usDev, long flags) {
+    public static long allocateBufferFor(IntBuffer errcode_ret, UsefulDevice usDev, long flags, int n) {
 
         long context = usDev.getContext();
 
-        FloatBuffer realBuffer = BufferUtils.createFloatBuffer(100);
-        long buffer = clCreateBuffer(context, flags, realBuffer, errcode_ret);
+        FloatBuffer dataBuff = BufferUtils.createFloatBuffer(n);
+        float[] dataArray = new float[n];
+        for (int i = 0; i < n; i++) {
+            dataArray[i] = i;
+        }
+        dataBuff.put(dataArray);
+        dataBuff.rewind();
+
+        long buffer = clCreateBuffer(context, flags, dataBuff, errcode_ret);
         checkCLError(errcode_ret);
 
         return buffer;
