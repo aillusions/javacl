@@ -25,7 +25,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
  *
  * @author aillusions
  */
-public class Main {
+public class SumClCalc {
 
     static {
         Configuration.OPENCL_EXPLICIT_INIT.set(false);
