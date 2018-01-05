@@ -10,6 +10,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -106,6 +107,25 @@ public class Main {
         // init kernel with constants
         long clKernel = clCreateKernel(clProgram, "openCLSumK", errcode_ret);
         checkCLError(errcode_ret);
+
+        long bufferArg1 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR);
+        long bufferArg2 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR);
+        long bufferArg3 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR);
+
+        clSetKernelArg1p(clKernel, 0, bufferArg1);
+        clSetKernelArg1p(clKernel, 1, bufferArg2);
+        clSetKernelArg1p(clKernel, 2, bufferArg3);
+    }
+
+    public static long allocateBufferFor(IntBuffer errcode_ret, UsefulDevice usDev, long flags) {
+
+        long context = usDev.getContext();
+
+        FloatBuffer realBuffer = BufferUtils.createFloatBuffer(100);
+        long buffer = clCreateBuffer(context, flags, realBuffer, errcode_ret);
+        checkCLError(errcode_ret);
+
+        return buffer;
     }
 
     public static void allocateBuffer(IntBuffer errcode_ret, UsefulDevice usDev) {
