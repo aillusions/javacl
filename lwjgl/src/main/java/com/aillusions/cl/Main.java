@@ -15,6 +15,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static com.aillusions.cl.demo.InfoUtil.checkCLError;
+import static com.aillusions.cl.programm.ProgramLoader.getFileNamePath;
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
@@ -55,6 +56,7 @@ public class Main {
 
     public static void executeKernel(IntBuffer errcode_ret, UsefulDevice usDev) throws IOException {
 
+        String clProgramm = "openCLSumK";
         int n = 10;
 
         float srcArrayA[] = new float[n];
@@ -68,8 +70,8 @@ public class Main {
 
         long device = usDev.getDevice();
 
-        LoadedProgram program = ProgramLoader.loadProgramm(errcode_ret, usDev, "openCLSumK");
-        long clKernel = program.getClKernel();
+        LoadedProgram program = ProgramLoader.loadProgramm(errcode_ret, usDev, getFileNamePath(clProgramm), clProgramm);
+        long clKernel = program.getKernel(clProgramm);
 
         long bufferArg1 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, srcArrayA);
         long bufferArg2 = allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, srcArrayB);

@@ -8,6 +8,8 @@ import org.lwjgl.opencl.CLProgramCallback;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import static com.aillusions.cl.demo.IOUtil.ioResourceToByteBuffer;
@@ -20,7 +22,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  */
 public class ProgramLoader {
 
-    public static LoadedProgram loadProgramm(IntBuffer errcode_ret, UsefulDevice usDev, String progName) throws IOException {
+    public static LoadedProgram loadProgramm(IntBuffer errcode_ret, UsefulDevice usDev, String filePath, String... progNames) throws IOException {
 
         long device = usDev.getDevice();
         long context = usDev.getContext();
@@ -28,7 +30,7 @@ public class ProgramLoader {
         PointerBuffer strings = BufferUtils.createPointerBuffer(1);
         PointerBuffer lengths = BufferUtils.createPointerBuffer(1);
 
-        ByteBuffer source = ioResourceToByteBuffer(getFileNamePath(progName), 4096);
+        ByteBuffer source = ioResourceToByteBuffer(filePath, 4096);
         strings.put(0, source);
         lengths.put(0, source.remaining());
 
@@ -63,15 +65,18 @@ public class ProgramLoader {
 
         buildCallback.free();
 
-        // init kernel with constants
-        long clKernel = clCreateKernel(clProgram, progName, errcode_ret);
-        checkCLError(errcode_ret);
+        Map<String, Long> kernels = new HashMap<>();
+        for (String prgName : progNames) {
+            // init kernel with constants
+            long clKernel = clCreateKernel(clProgram, prgName, errcode_ret);
+            checkCLError(errcode_ret);
+            kernels.put(prgName, clKernel);
+        }
 
-
-        return new LoadedProgram(clProgram, clKernel);
+        return new LoadedProgram(clProgram, kernels);
     }
 
-    private static String getFileNamePath(String progName) {
-        return progName + ".cl";
+    public static String getFileNamePath(String fileName) {
+        return fileName + ".cl";
     }
 }
