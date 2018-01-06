@@ -46,6 +46,12 @@ public class Main {
         return (((x) + ((a) - 1)) & ~((a) - 1));
     }
 
+    static int patNum = 2;
+    static int nrows = 2048;
+    static int ncols = 2560;
+    static int round = nrows * ncols;
+    static int invsize = 256;
+
     public static void main(String... arg) throws IOException {
 
         MemoryStack stack = stackPush();
@@ -73,15 +79,16 @@ public class Main {
 
         long clQueue = clCreateCommandQueue(usDev.getContext(), usDev.getDevice(), 0, errcode_ret);
 
-        PointerBuffer globalws = BufferUtils.createPointerBuffer(1);
-        globalws.put(0, 10);
+        PointerBuffer globalws = BufferUtils.createPointerBuffer(2);
+        globalws.put(0, ncols);
+        globalws.put(1, nrows);
 
         PointerBuffer invws = BufferUtils.createPointerBuffer(1);
-        invws.put(0, 10);
+        invws.put(0, (ncols * nrows) / invsize);
 
-       long kernel_0 = createKernel_0(usDev, program, errcode_ret);
-       long kernel_1 = createKernel_1(usDev, program, errcode_ret);
-       long kernel_2 = createKernel_2(usDev, program, errcode_ret);
+        long kernel_0 = createKernel_0(usDev, program, errcode_ret);
+        long kernel_1 = createKernel_1(usDev, program, errcode_ret);
+        long kernel_2 = createKernel_2(usDev, program, errcode_ret);
 
         {
             int errcode = clEnqueueNDRangeKernel(
@@ -97,7 +104,6 @@ public class Main {
 
             CL10.clWaitForEvents(event);
         }
-
 
         {
             int errcode = clEnqueueNDRangeKernel(
@@ -132,11 +138,6 @@ public class Main {
         program.clear();
         usDev.clear();
     }
-
-    static int patNum = 2;
-    static int nrows = 2048;
-    static int ncols = 2560;
-    static int round = nrows * ncols;
 
     /**
      * 0
@@ -183,7 +184,7 @@ public class Main {
             clSetKernelArg(clKernel, 3, mem_list);
         }
 
-        return  clKernel;
+        return clKernel;
     }
 
     /**
@@ -209,7 +210,7 @@ public class Main {
             clSetKernelArg1i(clKernel, 1, batch);
         }
 
-        return  clKernel;
+        return clKernel;
     }
 
     /**
@@ -255,7 +256,7 @@ public class Main {
 
         clSetKernelArg1i(clKernel, 4, 1);
 
-        return  clKernel;
+        return clKernel;
     }
 
 }
