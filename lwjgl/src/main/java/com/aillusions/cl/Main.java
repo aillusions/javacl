@@ -38,6 +38,14 @@ public class Main {
         }
     }
 
+    /*public static boolean is_pow2(int v) {
+        return !(v & (v - 1));
+    }*/
+
+    public static int round_up_pow2(int x, int a) {
+        return (((x) + ((a) - 1)) & ~((a) - 1));
+    }
+
     public static void main(String... arg) throws IOException {
 
         MemoryStack stack = stackPush();
@@ -62,6 +70,8 @@ public class Main {
 
 
         int nrows = 2048;
+        int ncols = 2560;
+        int round = nrows * ncols;
 
         PointerBuffer event = BufferUtils.createPointerBuffer(1);
 
@@ -79,11 +89,21 @@ public class Main {
             long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
 
             clSetKernelArg1p(clKernel, 0, bufferArg1);
-            clSetKernelArg1p(clKernel, 1, bufferArg1);
+
+            {
+                int roundUpPow2Val = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
+                long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, roundUpPow2Val, errcode_ret);
+                clRetainMemObject(z_heap);
+                PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
+                mem_list.put(0, z_heap);
+                clSetKernelArg(clKernel, 1, mem_list);
+            }
+
             clSetKernelArg1p(clKernel, 2, bufferArg1);
 
             {
                 long col_in = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, 32 * 2 * nrows, errcode_ret);
+                clRetainMemObject(col_in);
                 PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
                 mem_list.put(0, col_in);
                 clSetKernelArg(clKernel, 3, mem_list);
