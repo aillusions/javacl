@@ -1105,8 +1105,10 @@ ec_add_grid(
 	bn_unroll(ec_add_grid_inner_4);
 }
 
-__kernel void
-heap_invert(__global bn_word *z_heap, int batch)
+__kernel void heap_invert(
+                        __global bn_word *z_heap,
+                        int batch
+                        )
 {
 	bignum a, b, c, z;
 	int i, off, lcell, hcell, start;
