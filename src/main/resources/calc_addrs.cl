@@ -1023,8 +1023,7 @@ test_mod_inverse(__global bignum *inv_out, __global bignum *nums_in,
 #define ACCESS_BUNDLE 1024
 #define ACCESS_STRIDE (ACCESS_BUNDLE/BN_NWORDS)
 
-__kernel void
-ec_add_grid(
+__kernel void ec_add_grid(
             __global bn_word *points_out,
             __global bn_word *z_heap,
 	        __global bn_word *row_in,

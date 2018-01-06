@@ -87,6 +87,7 @@ public class Main {
         usDev.clear();
     }
 
+    static int patNum = 2;
     static int nrows = 2048;
     static int ncols = 2560;
     static int round = nrows * ncols;
@@ -106,10 +107,10 @@ public class Main {
 
         {
             int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
-            long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
-            clRetainMemObject(z_heap);
+            long points_out = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
+            clRetainMemObject(points_out);
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
-            mem_list.put(0, z_heap);
+            mem_list.put(0, points_out);
             clSetKernelArg(clKernel, 0, mem_list);
         }
 
@@ -124,10 +125,10 @@ public class Main {
 
         {
             int sizeof = round_up_pow2(32 * 2 * ncols, 4096); // 163840 ?
-            long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof, errcode_ret);
-            clRetainMemObject(z_heap);
+            long row_in = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof, errcode_ret);
+            clRetainMemObject(row_in);
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
-            mem_list.put(0, z_heap);
+            mem_list.put(0, row_in);
             clSetKernelArg(clKernel, 2, mem_list);
         }
 
@@ -176,7 +177,10 @@ public class Main {
             clSetKernelArg(clKernel, 0, mem_list);
         }
 
-        clSetKernelArg1i(clKernel, 1, 256);
+        {
+            int batch = 256;
+            clSetKernelArg1i(clKernel, 1, batch);
+        }
 
         int errcode = clEnqueueNDRangeKernel(
                 clQueue,
@@ -213,14 +217,12 @@ public class Main {
             clSetKernelArg(clKernel, 0, found);
         }
 
-        long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
-
         {
             int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
-            long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
-            clRetainMemObject(z_heap);
+            long points_in = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
+            clRetainMemObject(points_in);
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
-            mem_list.put(0, z_heap);
+            mem_list.put(0, points_in);
             clSetKernelArg(clKernel, 1, mem_list);
         }
 
@@ -233,7 +235,14 @@ public class Main {
             clSetKernelArg(clKernel, 2, mem_list);
         }
 
-        clSetKernelArg1p(clKernel, 3, bufferArg1);
+        {
+            int sizeof = 40 * patNum;
+            long target_table = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
+            clRetainMemObject(target_table);
+            PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
+            mem_list.put(0, target_table);
+            clSetKernelArg(clKernel, 3, mem_list);
+        }
 
         clSetKernelArg1i(clKernel, 4, 1);
 
