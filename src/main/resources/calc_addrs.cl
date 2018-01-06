@@ -1024,8 +1024,12 @@ test_mod_inverse(__global bignum *inv_out, __global bignum *nums_in,
 #define ACCESS_STRIDE (ACCESS_BUNDLE/BN_NWORDS)
 
 __kernel void
-ec_add_grid(__global bn_word *points_out, __global bn_word *z_heap,
-	    __global bn_word *row_in, __global bignum *col_in)
+ec_add_grid(
+            __global bn_word *points_out,
+            __global bn_word *z_heap,
+	        __global bn_word *row_in,
+	        __global bignum *col_in
+	        )
 {
 	bignum rx, ry;
 	bignum x1, y1, a, b, c, d, e, z;
@@ -1394,11 +1398,13 @@ hash160_ucmp_g(uint *a, __global uint *bound)
 	return 0;
 }
 
-__kernel void
-hash_ec_point_search_prefix(__global uint *found,
+__kernel void hash_ec_point_search_prefix(
+                __global uint *found,
 			    __global bn_word *points_in,
 			    __global bn_word *z_heap,
-			    __global uint *target_table, int ntargets)
+			    __global uint *target_table,
+			    int ntargets
+			    )
 {
 	uint hash[5];
 	int i, high, low, p, cell, start;

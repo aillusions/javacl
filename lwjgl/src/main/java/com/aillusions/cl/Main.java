@@ -61,6 +61,8 @@ public class Main {
                 hash_ec_point_search_prefix);
 
 
+        int nrows = 2048;
+
         PointerBuffer event = BufferUtils.createPointerBuffer(1);
 
         long clQueue = clCreateCommandQueue(usDev.getContext(), usDev.getDevice(), 0, errcode_ret);
@@ -79,7 +81,13 @@ public class Main {
             clSetKernelArg1p(clKernel, 0, bufferArg1);
             clSetKernelArg1p(clKernel, 1, bufferArg1);
             clSetKernelArg1p(clKernel, 2, bufferArg1);
-            clSetKernelArg1p(clKernel, 3, bufferArg1);
+
+            {
+                long col_in = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, 32 * 2 * nrows, errcode_ret);
+                PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
+                mem_list.put(0, col_in);
+                clSetKernelArg(clKernel, 3, mem_list);
+            }
 
             int errcode = clEnqueueNDRangeKernel(
                     clQueue,
@@ -121,7 +129,6 @@ public class Main {
         {
             long clKernel = program.getKernel(hash_ec_point_search_prefix);
 
-            long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
 
             //IntBuffer buffer0 = stack.callocInt(1);
 
@@ -129,6 +136,8 @@ public class Main {
                 PointerBuffer found = BufferUtils.createPointerBuffer(1);
                 clSetKernelArg(clKernel, 0, found);
             }
+
+            long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
 
             clSetKernelArg1p(clKernel, 1, bufferArg1);
             clSetKernelArg1p(clKernel, 2, bufferArg1);
@@ -154,3 +163,8 @@ public class Main {
         usDev.clear();
     }
 }
+
+
+//ByteBuffer col_in = BufferUtils.createByteBuffer();
+//clRetainMemObject(col_in);
+//clSetKernelArg(clKernel, 3, col_in);
