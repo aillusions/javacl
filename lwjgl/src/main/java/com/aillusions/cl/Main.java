@@ -69,10 +69,6 @@ public class Main {
                 hash_ec_point_search_prefix);
 
 
-        int nrows = 2048;
-        int ncols = 2560;
-        int round = nrows * ncols;
-
         PointerBuffer event = BufferUtils.createPointerBuffer(1);
 
         long clQueue = clCreateCommandQueue(usDev.getContext(), usDev.getDevice(), 0, errcode_ret);
@@ -83,106 +79,136 @@ public class Main {
         PointerBuffer invws = BufferUtils.createPointerBuffer(1);
         invws.put(0, 10);
 
-        {
-            long clKernel = program.getKernel(ec_add_grid);
-
-            long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
-
-            clSetKernelArg1p(clKernel, 0, bufferArg1);
-
-            {
-                int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
-                long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
-                clRetainMemObject(z_heap);
-                PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
-                mem_list.put(0, z_heap);
-                clSetKernelArg(clKernel, 1, mem_list);
-            }
-
-            clSetKernelArg1p(clKernel, 2, bufferArg1);
-
-            {
-                int sizeof = 32 * 2 * nrows; // ?
-                long col_in = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof, errcode_ret);
-                clRetainMemObject(col_in);
-                PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
-                mem_list.put(0, col_in);
-                clSetKernelArg(clKernel, 3, mem_list);
-            }
-
-            int errcode = clEnqueueNDRangeKernel(
-                    clQueue,
-                    clKernel,
-                    1,
-                    null,
-                    globalws,
-                    null,
-                    null,
-                    event);
-            checkCLError(errcode);
-
-            CL10.clWaitForEvents(event);
-        }
-
-        {
-            long clKernel = program.getKernel(heap_invert);
-
-            long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
-
-            clSetKernelArg1p(clKernel, 0, bufferArg1);
-
-            clSetKernelArg1i(clKernel, 1, 256);
-
-            int errcode = clEnqueueNDRangeKernel(
-                    clQueue,
-                    clKernel,
-                    1,
-                    null,
-                    invws,
-                    null,
-                    null,
-                    event);
-            checkCLError(errcode);
-
-            CL10.clWaitForEvents(event);
-        }
-
-        {
-            long clKernel = program.getKernel(hash_ec_point_search_prefix);
-
-
-            //IntBuffer buffer0 = stack.callocInt(1);
-
-            {
-                PointerBuffer found = BufferUtils.createPointerBuffer(1);
-                clSetKernelArg(clKernel, 0, found);
-            }
-
-            long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
-
-            clSetKernelArg1p(clKernel, 1, bufferArg1);
-            clSetKernelArg1p(clKernel, 2, bufferArg1);
-            clSetKernelArg1p(clKernel, 3, bufferArg1);
-
-            clSetKernelArg1i(clKernel, 4, 1);
-
-            int errcode = clEnqueueNDRangeKernel(
-                    clQueue,
-                    clKernel,
-                    1,
-                    null,
-                    globalws,
-                    null,
-                    null,
-                    event);
-            checkCLError(errcode);
-
-            CL10.clWaitForEvents(event);
-        }
+        createKernel_0(usDev, program, errcode_ret, clQueue, globalws, invws, event);
+        createKernel_1(usDev, program, errcode_ret, clQueue, globalws, invws, event);
+        createKernel_2(usDev, program, errcode_ret, clQueue, globalws, invws, event);
 
         program.clear();
         usDev.clear();
     }
+
+    static int nrows = 2048;
+    static int ncols = 2560;
+    static int round = nrows * ncols;
+
+    public static void createKernel_0(UsefulDevice usDev,
+                                      LoadedProgram program,
+                                      IntBuffer errcode_ret,
+                                      long clQueue,
+                                      PointerBuffer globalws,
+                                      PointerBuffer invws,
+                                      PointerBuffer event) {
+
+        long clKernel = program.getKernel(ec_add_grid);
+
+        long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
+
+        clSetKernelArg1p(clKernel, 0, bufferArg1);
+
+        {
+            int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
+            long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
+            clRetainMemObject(z_heap);
+            PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
+            mem_list.put(0, z_heap);
+            clSetKernelArg(clKernel, 1, mem_list);
+        }
+
+        clSetKernelArg1p(clKernel, 2, bufferArg1);
+
+        {
+            int sizeof = 32 * 2 * nrows; // ?
+            long col_in = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof, errcode_ret);
+            clRetainMemObject(col_in);
+            PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
+            mem_list.put(0, col_in);
+            clSetKernelArg(clKernel, 3, mem_list);
+        }
+
+        int errcode = clEnqueueNDRangeKernel(
+                clQueue,
+                clKernel,
+                1,
+                null,
+                globalws,
+                null,
+                null,
+                event);
+        checkCLError(errcode);
+
+        CL10.clWaitForEvents(event);
+    }
+
+    public static void createKernel_1(UsefulDevice usDev,
+                                      LoadedProgram program,
+                                      IntBuffer errcode_ret,
+                                      long clQueue,
+                                      PointerBuffer globalws,
+                                      PointerBuffer invws,
+                                      PointerBuffer event) {
+
+        long clKernel = program.getKernel(heap_invert);
+
+        long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
+
+        clSetKernelArg1p(clKernel, 0, bufferArg1);
+
+        clSetKernelArg1i(clKernel, 1, 256);
+
+        int errcode = clEnqueueNDRangeKernel(
+                clQueue,
+                clKernel,
+                1,
+                null,
+                invws,
+                null,
+                null,
+                event);
+        checkCLError(errcode);
+
+        CL10.clWaitForEvents(event);
+    }
+
+    public static void createKernel_2(UsefulDevice usDev,
+                                      LoadedProgram program,
+                                      IntBuffer errcode_ret,
+                                      long clQueue,
+                                      PointerBuffer globalws,
+                                      PointerBuffer invws,
+                                      PointerBuffer event) {
+
+        long clKernel = program.getKernel(hash_ec_point_search_prefix);
+
+
+        //IntBuffer buffer0 = stack.callocInt(1);
+
+        {
+            PointerBuffer found = BufferUtils.createPointerBuffer(1);
+            clSetKernelArg(clKernel, 0, found);
+        }
+
+        long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
+
+        clSetKernelArg1p(clKernel, 1, bufferArg1);
+        clSetKernelArg1p(clKernel, 2, bufferArg1);
+        clSetKernelArg1p(clKernel, 3, bufferArg1);
+
+        clSetKernelArg1i(clKernel, 4, 1);
+
+        int errcode = clEnqueueNDRangeKernel(
+                clQueue,
+                clKernel,
+                1,
+                null,
+                globalws,
+                null,
+                null,
+                event);
+        checkCLError(errcode);
+
+        CL10.clWaitForEvents(event);
+    }
+
 }
 
 
