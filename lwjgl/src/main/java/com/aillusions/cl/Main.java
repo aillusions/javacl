@@ -195,7 +195,16 @@ public class Main {
         long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
 
         clSetKernelArg1p(clKernel, 1, bufferArg1);
-        clSetKernelArg1p(clKernel, 2, bufferArg1);
+
+        {
+            int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
+            long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
+            clRetainMemObject(z_heap);
+            PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
+            mem_list.put(0, z_heap);
+            clSetKernelArg(clKernel, 2, mem_list);
+        }
+
         clSetKernelArg1p(clKernel, 3, bufferArg1);
 
         clSetKernelArg1i(clKernel, 4, 1);
