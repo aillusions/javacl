@@ -123,7 +123,13 @@ public class Main {
 
             long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
 
-            clSetKernelArg1p(clKernel, 0, bufferArg1);
+            //IntBuffer buffer0 = stack.callocInt(1);
+
+            {
+                PointerBuffer found = BufferUtils.createPointerBuffer(1);
+                clSetKernelArg(clKernel, 0, found);
+            }
+
             clSetKernelArg1p(clKernel, 1, bufferArg1);
             clSetKernelArg1p(clKernel, 2, bufferArg1);
             clSetKernelArg1p(clKernel, 3, bufferArg1);
