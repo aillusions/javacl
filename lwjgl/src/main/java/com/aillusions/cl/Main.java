@@ -91,6 +91,9 @@ public class Main {
     static int ncols = 2560;
     static int round = nrows * ncols;
 
+    /**
+     * 0
+     */
     public static void createKernel_0(UsefulDevice usDev,
                                       LoadedProgram program,
                                       IntBuffer errcode_ret,
@@ -121,7 +124,14 @@ public class Main {
             clSetKernelArg(clKernel, 1, mem_list);
         }
 
-        clSetKernelArg1p(clKernel, 2, bufferArg1);
+        {
+            int sizeof = round_up_pow2(32 * 2 * ncols, 4096); // 163840 ?
+            long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof, errcode_ret);
+            clRetainMemObject(z_heap);
+            PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
+            mem_list.put(0, z_heap);
+            clSetKernelArg(clKernel, 2, mem_list);
+        }
 
         {
             int sizeof = 32 * 2 * nrows; // ?
