@@ -104,8 +104,6 @@ public class Main {
 
         long clKernel = program.getKernel(ec_add_grid);
 
-        long bufferArg1 = SumClCalc.allocateBufferFor(errcode_ret, usDev, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, anArray);
-
         {
             int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
             long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
@@ -156,6 +154,9 @@ public class Main {
         CL10.clWaitForEvents(event);
     }
 
+    /**
+     * 1
+     */
     public static void createKernel_1(UsefulDevice usDev,
                                       LoadedProgram program,
                                       IntBuffer errcode_ret,
@@ -191,6 +192,9 @@ public class Main {
         CL10.clWaitForEvents(event);
     }
 
+    /**
+     * 2
+     */
     public static void createKernel_2(UsefulDevice usDev,
                                       LoadedProgram program,
                                       IntBuffer errcode_ret,
