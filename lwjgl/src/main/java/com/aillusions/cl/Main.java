@@ -79,9 +79,55 @@ public class Main {
         PointerBuffer invws = BufferUtils.createPointerBuffer(1);
         invws.put(0, 10);
 
-        createKernel_0(usDev, program, errcode_ret, clQueue, globalws, invws, event);
-        createKernel_1(usDev, program, errcode_ret, clQueue, globalws, invws, event);
-        createKernel_2(usDev, program, errcode_ret, clQueue, globalws, invws, event);
+       long kernel_0 = createKernel_0(usDev, program, errcode_ret);
+       long kernel_1 = createKernel_1(usDev, program, errcode_ret);
+       long kernel_2 = createKernel_2(usDev, program, errcode_ret);
+
+        {
+            int errcode = clEnqueueNDRangeKernel(
+                    clQueue,
+                    kernel_0,
+                    1,
+                    null,
+                    globalws,
+                    null,
+                    null,
+                    event);
+            checkCLError(errcode);
+
+            CL10.clWaitForEvents(event);
+        }
+
+
+        {
+            int errcode = clEnqueueNDRangeKernel(
+                    clQueue,
+                    kernel_1,
+                    1,
+                    null,
+                    invws,
+                    null,
+                    null,
+                    event);
+            checkCLError(errcode);
+
+            CL10.clWaitForEvents(event);
+        }
+
+        {
+            int errcode = clEnqueueNDRangeKernel(
+                    clQueue,
+                    kernel_2,
+                    1,
+                    null,
+                    globalws,
+                    null,
+                    null,
+                    event);
+            checkCLError(errcode);
+
+            CL10.clWaitForEvents(event);
+        }
 
         program.clear();
         usDev.clear();
@@ -95,13 +141,9 @@ public class Main {
     /**
      * 0
      */
-    public static void createKernel_0(UsefulDevice usDev,
+    public static long createKernel_0(UsefulDevice usDev,
                                       LoadedProgram program,
-                                      IntBuffer errcode_ret,
-                                      long clQueue,
-                                      PointerBuffer globalws,
-                                      PointerBuffer invws,
-                                      PointerBuffer event) {
+                                      IntBuffer errcode_ret) {
 
         long clKernel = program.getKernel(ec_add_grid);
 
@@ -141,30 +183,15 @@ public class Main {
             clSetKernelArg(clKernel, 3, mem_list);
         }
 
-        int errcode = clEnqueueNDRangeKernel(
-                clQueue,
-                clKernel,
-                1,
-                null,
-                globalws,
-                null,
-                null,
-                event);
-        checkCLError(errcode);
-
-        CL10.clWaitForEvents(event);
+        return  clKernel;
     }
 
     /**
      * 1
      */
-    public static void createKernel_1(UsefulDevice usDev,
+    public static long createKernel_1(UsefulDevice usDev,
                                       LoadedProgram program,
-                                      IntBuffer errcode_ret,
-                                      long clQueue,
-                                      PointerBuffer globalws,
-                                      PointerBuffer invws,
-                                      PointerBuffer event) {
+                                      IntBuffer errcode_ret) {
 
         long clKernel = program.getKernel(heap_invert);
 
@@ -182,35 +209,17 @@ public class Main {
             clSetKernelArg1i(clKernel, 1, batch);
         }
 
-        int errcode = clEnqueueNDRangeKernel(
-                clQueue,
-                clKernel,
-                1,
-                null,
-                invws,
-                null,
-                null,
-                event);
-        checkCLError(errcode);
-
-        CL10.clWaitForEvents(event);
+        return  clKernel;
     }
 
     /**
      * 2
      */
-    public static void createKernel_2(UsefulDevice usDev,
+    public static long createKernel_2(UsefulDevice usDev,
                                       LoadedProgram program,
-                                      IntBuffer errcode_ret,
-                                      long clQueue,
-                                      PointerBuffer globalws,
-                                      PointerBuffer invws,
-                                      PointerBuffer event) {
+                                      IntBuffer errcode_ret) {
 
         long clKernel = program.getKernel(hash_ec_point_search_prefix);
-
-
-        //IntBuffer buffer0 = stack.callocInt(1);
 
         {
             PointerBuffer found = BufferUtils.createPointerBuffer(1);
@@ -246,23 +255,12 @@ public class Main {
 
         clSetKernelArg1i(clKernel, 4, 1);
 
-        int errcode = clEnqueueNDRangeKernel(
-                clQueue,
-                clKernel,
-                1,
-                null,
-                globalws,
-                null,
-                null,
-                event);
-        checkCLError(errcode);
-
-        CL10.clWaitForEvents(event);
+        return  clKernel;
     }
 
 }
 
-
+//IntBuffer buffer0 = stack.callocInt(1);
 //ByteBuffer col_in = BufferUtils.createByteBuffer();
 //clRetainMemObject(col_in);
 //clSetKernelArg(clKernel, 3, col_in);
