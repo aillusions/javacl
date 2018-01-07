@@ -3,6 +3,7 @@ package com.aillusions.cl;
 import com.aillusions.cl.demo.InfoUtil;
 import com.aillusions.cl.device.OpenCLDeviceProvider;
 import com.aillusions.cl.device.UsefulDevice;
+import com.aillusions.cl.kernel.WindUpKernel;
 import com.aillusions.cl.programm.LoadedProgram;
 import com.aillusions.cl.programm.ProgramLoader;
 import org.lwjgl.BufferUtils;
@@ -91,15 +92,15 @@ public class Main {
         PointerBuffer invws = BufferUtils.createPointerBuffer(1);
         invws.put(0, (ncols * nrows) / invsize); // 20480 ?
 
-        long kernel_0 = initKernel0(usDev, program, errcode_ret);
-        long kernel_1 = initKernel1(usDev, program, errcode_ret);
-        long kernel_2 = initKernel2(usDev, program, errcode_ret);
+        long kernel_0 = initKernel0(usDev, program, errcode_ret).getKernel();
+        long kernel_1 = initKernel1(usDev, program, errcode_ret).getKernel();
+        long kernel_2 = initKernel2(usDev, program, errcode_ret).getKernel();
 
         /*
             Mac:
-                kernel_0: 200 ms.
+                kernel_0: 210 ms.
                 kernel_1: 70 ms.
-                kernel_2: 1000 ms.
+                kernel_2: 2000 ms.
          */
 
         /*
@@ -156,9 +157,9 @@ public class Main {
     /**
      * 0
      */
-    public static long initKernel0(UsefulDevice usDev,
-                                   LoadedProgram program,
-                                   IntBuffer errcode_ret) {
+    public static WindUpKernel initKernel0(UsefulDevice usDev,
+                                           LoadedProgram program,
+                                           IntBuffer errcode_ret) {
 
         long clKernel = program.getKernel(ec_add_grid);
 
@@ -198,15 +199,15 @@ public class Main {
             clSetKernelArg(clKernel, 3, mem_list);
         }
 
-        return clKernel;
+        return new WindUpKernel(clKernel);
     }
 
     /**
      * 1
      */
-    public static long initKernel1(UsefulDevice usDev,
-                                   LoadedProgram program,
-                                   IntBuffer errcode_ret) {
+    public static WindUpKernel initKernel1(UsefulDevice usDev,
+                                           LoadedProgram program,
+                                           IntBuffer errcode_ret) {
 
         long clKernel = program.getKernel(heap_invert);
 
@@ -224,15 +225,15 @@ public class Main {
             clSetKernelArg1i(clKernel, 1, batch);
         }
 
-        return clKernel;
+        return new WindUpKernel(clKernel);
     }
 
     /**
      * 2
      */
-    public static long initKernel2(UsefulDevice usDev,
-                                   LoadedProgram program,
-                                   IntBuffer errcode_ret) {
+    public static WindUpKernel initKernel2(UsefulDevice usDev,
+                                           LoadedProgram program,
+                                           IntBuffer errcode_ret) {
 
         long clKernel = program.getKernel(hash_ec_point_search_prefix);
 
@@ -271,7 +272,7 @@ public class Main {
         int ntargets = patNum;
         clSetKernelArg1i(clKernel, 4, ntargets);
 
-        return clKernel;
+        return new WindUpKernel(clKernel);
     }
 
 }
