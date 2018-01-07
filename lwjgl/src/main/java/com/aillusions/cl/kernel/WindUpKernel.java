@@ -10,4 +10,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class WindUpKernel {
     private long kernel;
+    private long[] buffers;
 }
