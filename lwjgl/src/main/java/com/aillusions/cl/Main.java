@@ -55,6 +55,8 @@ public class Main {
     static int patNum = 35_000_000; // Mac
     // static int patNum = 1_400_000_000; // PC
 
+    static int target_table_buff_size = 40 * patNum;
+
     static int nrows = 2048;
     static int ncols = 2560;
     static int round = nrows * ncols;
@@ -95,6 +97,19 @@ public class Main {
         WindUpKernel kernel_0 = initKernel0(usDev, program, errcode_ret);
         WindUpKernel kernel_1 = initKernel1(usDev, program, errcode_ret);
         WindUpKernel kernel_2 = initKernel2(usDev, program, errcode_ret);
+
+        clEnqueueMapBuffer(
+                clQueue,
+                kernel_2.getBuffers()[3],
+                true,
+                CL_MAP_WRITE,
+                0L,
+                target_table_buff_size,
+                null,
+                null,
+                errcode_ret,
+                null
+        );
 
         /*
             Mac:
@@ -283,7 +298,7 @@ public class Main {
 
         {
             int argIdx = 3;
-            int sizeof = 40 * patNum;
+            int sizeof = target_table_buff_size;
             long target_table = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
             clRetainMemObject(target_table);
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
