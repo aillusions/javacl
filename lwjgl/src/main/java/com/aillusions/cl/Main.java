@@ -11,7 +11,11 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.aillusions.cl.demo.InfoUtil.checkCLError;
 import static com.aillusions.cl.programm.ProgramLoader.getFileNamePath;
@@ -52,8 +56,11 @@ public class Main {
             Mac: 2130706432 bytes (2Gb)
     */
 
-    static int patNum = 35_000_000; // Mac
-    // static int patNum = 1_400_000_000; // PC
+    public static List<String> patterns = new LinkedList<>(Arrays.asList("1aaa11", "1aaa22", "1aaa33"));
+    static int patNum = patterns.size();
+
+    // static int patNumMax = 35_000_000; // Mac
+    // static int patNumMax = 1_400_000_000; // PC
 
     static int target_table_buff_size = 40 * patNum;
 
@@ -111,6 +118,22 @@ public class Main {
                 null
         );
         checkCLError(errcode_ret);
+
+        PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
+
+        ByteBuffer mapped_ptr = BufferUtils.createByteBuffer(target_table_buff_size);
+
+        int ret = clEnqueueUnmapMemObject(
+                clQueue,
+                kernel_2.getBuffers()[3],
+                mapped_ptr,
+                null,
+                eventOut
+        );
+        checkCLError(ret);
+
+        clWaitForEvents(eventOut);
+        clReleaseEvent(eventOut.get());
 
         /*
             Mac:
