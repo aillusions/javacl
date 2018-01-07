@@ -88,10 +88,30 @@ public class Main {
         long kernel_1 = initKernel1(usDev, program, errcode_ret);
         long kernel_2 = initKernel2(usDev, program, errcode_ret);
 
-        enqueueAndWait(clQueue, kernel_0, 2, globalws);
-        enqueueAndWait(clQueue, kernel_1, 1, invws);
-        enqueueAndWait(clQueue, kernel_2, 2, globalws);
-        
+        /*
+            Mac:
+                kernel_0: 200 ms.
+                kernel_1: 70 ms.
+                kernel_2: 1000 ms.
+         */
+        {
+            long start = System.currentTimeMillis();
+            enqueueAndWait(clQueue, kernel_0, 2, globalws);
+            System.out.println("kernel_0: " + (System.currentTimeMillis() - start) + " ms.");
+        }
+
+        {
+            long start = System.currentTimeMillis();
+            enqueueAndWait(clQueue, kernel_1, 1, invws);
+            System.out.println("kernel_1: " + (System.currentTimeMillis() - start) + " ms.");
+        }
+
+        {
+            long start = System.currentTimeMillis();
+            enqueueAndWait(clQueue, kernel_2, 2, globalws);
+            System.out.println("kernel_2: " + (System.currentTimeMillis() - start) + " ms.");
+        }
+
         program.clear();
         usDev.clear();
     }
