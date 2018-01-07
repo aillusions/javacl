@@ -52,7 +52,7 @@ public class Main {
     */
 
     static int patNum = 35_000_000; // Mac
-    //static int patNum = 900_000_000; // PC ?
+    // static int patNum = 1_400_000_000; // PC
 
     static int nrows = 2048;
     static int ncols = 2560;
