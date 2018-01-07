@@ -110,6 +110,7 @@ public class Main {
                 errcode_ret,
                 null
         );
+        checkCLError(errcode_ret);
 
         /*
             Mac:
@@ -188,6 +189,7 @@ public class Main {
             mem_list.put(0, points_out);
             clSetKernelArg(clKernel, argIdx, mem_list);
             buffers[argIdx] = points_out;
+            checkCLError(errcode_ret);
         }
 
         {
@@ -199,6 +201,7 @@ public class Main {
             mem_list.put(0, z_heap);
             clSetKernelArg(clKernel, argIdx, mem_list);
             buffers[argIdx] = z_heap;
+            checkCLError(errcode_ret);
         }
 
         {
@@ -210,6 +213,7 @@ public class Main {
             mem_list.put(0, row_in);
             clSetKernelArg(clKernel, argIdx, mem_list);
             buffers[argIdx] = row_in;
+            checkCLError(errcode_ret);
         }
 
         {
@@ -221,6 +225,7 @@ public class Main {
             mem_list.put(0, col_in);
             clSetKernelArg(clKernel, argIdx, mem_list);
             buffers[argIdx] = col_in;
+            checkCLError(errcode_ret);
         }
 
         return new WindUpKernel(clKernel, buffers);
@@ -245,6 +250,7 @@ public class Main {
             mem_list.put(0, z_heap);
             clSetKernelArg(clKernel, argIdx, mem_list);
             buffers[argIdx] = z_heap;
+            checkCLError(errcode_ret);
         }
 
         {
@@ -283,6 +289,7 @@ public class Main {
             mem_list.put(0, points_in);
             clSetKernelArg(clKernel, argIdx, mem_list);
             buffers[argIdx] = points_in;
+            checkCLError(errcode_ret);
         }
 
         {
@@ -294,6 +301,7 @@ public class Main {
             mem_list.put(0, z_heap);
             clSetKernelArg(clKernel, argIdx, mem_list);
             buffers[argIdx] = z_heap;
+            checkCLError(errcode_ret);
         }
 
         {
@@ -305,6 +313,7 @@ public class Main {
             mem_list.put(0, target_table);
             clSetKernelArg(clKernel, argIdx, mem_list);
             buffers[argIdx] = target_table;
+            checkCLError(errcode_ret);
         }
 
         {
