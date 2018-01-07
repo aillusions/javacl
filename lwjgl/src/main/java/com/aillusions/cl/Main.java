@@ -91,7 +91,6 @@ public class Main {
                 // "hash_ec_point_get", // ??
                 hash_ec_point_search_prefix);
 
-
         long clQueue = clCreateCommandQueue(usDev.getContext(), usDev.getDevice(), 0, errcode_ret);
 
         PointerBuffer globalws = BufferUtils.createPointerBuffer(2);
@@ -105,33 +104,70 @@ public class Main {
         WindUpKernel kernel_1 = initKernel1(usDev, program, errcode_ret);
         WindUpKernel kernel_2 = initKernel2(usDev, program, errcode_ret);
 
-        ByteBuffer mappedBuffer = clEnqueueMapBuffer(
-                clQueue,
-                kernel_2.getBuffers()[3],
-                true,
-                CL_MAP_WRITE,
-                0L,
-                target_table_buff_size,
-                null,
-                null,
-                errcode_ret,
-                null
-        );
-        checkCLError(errcode_ret);
+        // found indicator
+        {
 
-        PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
+            long buffer = kernel_2.getBuffers()[0];
+            ByteBuffer ocl_found_out = clEnqueueMapBuffer(
+                    clQueue,
+                    buffer,
+                    true,
+                    CL_MAP_WRITE,
+                    0L,
+                    28, //
+                    null,
+                    null,
+                    errcode_ret,
+                    null
+            );
+            checkCLError(errcode_ret);
+            //ocl_found_out.put(0, (byte) -1); //ocl_found_out[0] = 0xffffffff; ??
+            ocl_found_out.put(ByteBuffer.allocate(28));
 
-        int ret = clEnqueueUnmapMemObject(
-                clQueue,
-                kernel_2.getBuffers()[3],
-                mappedBuffer,
-                null,
-                eventOut
-        );
-        checkCLError(ret);
+            PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
 
-        clWaitForEvents(eventOut);
-        clReleaseEvent(eventOut.get());
+            int ret = clEnqueueUnmapMemObject(
+                    clQueue,
+                    buffer,
+                    ocl_found_out,
+                    null,
+                    eventOut
+            );
+            checkCLError(ret);
+
+            clWaitForEvents(eventOut);
+            clReleaseEvent(eventOut.get());
+        }
+
+        {
+            ByteBuffer mappedBuffer = clEnqueueMapBuffer(
+                    clQueue,
+                    kernel_2.getBuffers()[3],
+                    true,
+                    CL_MAP_WRITE,
+                    0L,
+                    target_table_buff_size,
+                    null,
+                    null,
+                    errcode_ret,
+                    null
+            );
+            checkCLError(errcode_ret);
+
+            PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
+
+            int ret = clEnqueueUnmapMemObject(
+                    clQueue,
+                    kernel_2.getBuffers()[3],
+                    mappedBuffer,
+                    null,
+                    eventOut
+            );
+            checkCLError(ret);
+
+            clWaitForEvents(eventOut);
+            clReleaseEvent(eventOut.get());
+        }
 
         /*
             Mac:
@@ -296,9 +332,14 @@ public class Main {
 
         {
             int argIdx = 0;
-            PointerBuffer found = BufferUtils.createPointerBuffer(1);
-            clSetKernelArg(clKernel, argIdx, found);
-            buffers[argIdx] = found.get(0);
+            int sizeof = 28;
+            long found = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof, errcode_ret);
+            clRetainMemObject(found);
+            PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
+            mem_list.put(0, found);
+            clSetKernelArg(clKernel, argIdx, mem_list);
+            buffers[argIdx] = found;
+            checkCLError(errcode_ret);
         }
 
         {
