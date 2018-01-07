@@ -84,76 +84,46 @@ public class Main {
         PointerBuffer invws = BufferUtils.createPointerBuffer(1);
         invws.put(0, (ncols * nrows) / invsize); // 20480 ?
 
-        long kernel_0 = createKernel_0(usDev, program, errcode_ret);
-        long kernel_1 = createKernel_1(usDev, program, errcode_ret);
-        long kernel_2 = createKernel_2(usDev, program, errcode_ret);
+        long kernel_0 = initKernel0(usDev, program, errcode_ret);
+        long kernel_1 = initKernel1(usDev, program, errcode_ret);
+        long kernel_2 = initKernel2(usDev, program, errcode_ret);
+
+        enqueueAndWait(clQueue, kernel_0, 2, globalws);
+        enqueueAndWait(clQueue, kernel_1, 1, invws);
+        enqueueAndWait(clQueue, kernel_2, 2, globalws);
+        
+        program.clear();
+        usDev.clear();
+    }
+
+    public static void enqueueAndWait(long clQueue, long kernel, int dimm, PointerBuffer ws) {
 
         PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
 
-        {
-            int errcode = clEnqueueNDRangeKernel(
-                    clQueue,
-                    kernel_0,
-                    2,
-                    null,
-                    globalws,
-                    null,
-                    null,
-                    eventOut);
-            checkCLError(errcode);
+        int errcode = clEnqueueNDRangeKernel(
+                clQueue,
+                kernel, dimm,
+                null,
+                ws,
+                null,
+                null,
+                eventOut);
+        checkCLError(errcode);
 
-            eventOut.rewind();
-            clWaitForEvents(eventOut);
-            long eventAddr = eventOut.get(0);
-            InfoUtil.checkCLError(clReleaseEvent(eventAddr));
-        }
+        eventOut.rewind();
+        clWaitForEvents(eventOut);
+        long eventAddr = eventOut.get(0);
 
-        {
-            int errcode = clEnqueueNDRangeKernel(
-                    clQueue,
-                    kernel_1,
-                    1,
-                    null,
-                    invws,
-                    null,
-                    null,
-                    eventOut);
-            checkCLError(errcode);
-
-            eventOut.rewind();
-            clWaitForEvents(eventOut);
-            long eventAddr = eventOut.get(0);
-            InfoUtil.checkCLError(clReleaseEvent(eventAddr));
-        }
-
-        {
-            int errcode = clEnqueueNDRangeKernel(
-                    clQueue,
-                    kernel_2,
-                    2,
-                    null,
-                    globalws,
-                    null,
-                    null,
-                    eventOut);
-            checkCLError(errcode);
-
-            eventOut.rewind();
-            clWaitForEvents(eventOut);
-            long eventAddr = eventOut.get(0);
-            InfoUtil.checkCLError(clReleaseEvent(eventAddr));
-        }
-
-        program.clear();
-        usDev.clear();
+        errcode = clReleaseEvent(eventAddr);
+        InfoUtil.checkCLError(errcode);
     }
 
     /**
      * 0
      */
-    public static long createKernel_0(UsefulDevice usDev,
-                                      LoadedProgram program,
-                                      IntBuffer errcode_ret) {
+    public static long initKernel0(UsefulDevice usDev,
+                                   LoadedProgram program,
+                                   IntBuffer errcode_ret) {
 
         long clKernel = program.getKernel(ec_add_grid);
 
@@ -199,9 +169,9 @@ public class Main {
     /**
      * 1
      */
-    public static long createKernel_1(UsefulDevice usDev,
-                                      LoadedProgram program,
-                                      IntBuffer errcode_ret) {
+    public static long initKernel1(UsefulDevice usDev,
+                                   LoadedProgram program,
+                                   IntBuffer errcode_ret) {
 
         long clKernel = program.getKernel(heap_invert);
 
@@ -225,9 +195,9 @@ public class Main {
     /**
      * 2
      */
-    public static long createKernel_2(UsefulDevice usDev,
-                                      LoadedProgram program,
-                                      IntBuffer errcode_ret) {
+    public static long initKernel2(UsefulDevice usDev,
+                                   LoadedProgram program,
+                                   IntBuffer errcode_ret) {
 
         long clKernel = program.getKernel(hash_ec_point_search_prefix);
 
