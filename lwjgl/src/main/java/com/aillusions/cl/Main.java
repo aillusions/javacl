@@ -1,12 +1,12 @@
 package com.aillusions.cl;
 
+import com.aillusions.cl.demo.InfoUtil;
 import com.aillusions.cl.device.OpenCLDeviceProvider;
 import com.aillusions.cl.device.UsefulDevice;
 import com.aillusions.cl.programm.LoadedProgram;
 import com.aillusions.cl.programm.ProgramLoader;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.opencl.CL10;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
@@ -75,8 +75,6 @@ public class Main {
                 hash_ec_point_search_prefix);
 
 
-        PointerBuffer event = BufferUtils.createPointerBuffer(1);
-
         long clQueue = clCreateCommandQueue(usDev.getContext(), usDev.getDevice(), 0, errcode_ret);
 
         PointerBuffer globalws = BufferUtils.createPointerBuffer(2);
@@ -84,25 +82,29 @@ public class Main {
         globalws.put(1, nrows);
 
         PointerBuffer invws = BufferUtils.createPointerBuffer(1);
-        invws.put(0, (ncols * nrows) / invsize);
+        invws.put(0, (ncols * nrows) / invsize); // 20480 ?
 
         long kernel_0 = createKernel_0(usDev, program, errcode_ret);
         long kernel_1 = createKernel_1(usDev, program, errcode_ret);
         long kernel_2 = createKernel_2(usDev, program, errcode_ret);
 
+        PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
+
         {
             int errcode = clEnqueueNDRangeKernel(
                     clQueue,
                     kernel_0,
-                    1,
+                    2,
                     null,
                     globalws,
                     null,
                     null,
-                    event);
+                    eventOut);
             checkCLError(errcode);
 
-            CL10.clWaitForEvents(event);
+            clWaitForEvents(eventOut);
+            long eventAddr = eventOut.get(0);
+            InfoUtil.checkCLError(clReleaseEvent(eventAddr));
         }
 
         {
@@ -114,10 +116,12 @@ public class Main {
                     invws,
                     null,
                     null,
-                    event);
+                    eventOut);
             checkCLError(errcode);
 
-            CL10.clWaitForEvents(event);
+            clWaitForEvents(eventOut);
+            long eventAddr = eventOut.get(0);
+            InfoUtil.checkCLError(clReleaseEvent(eventAddr));
         }
 
         {
@@ -129,10 +133,12 @@ public class Main {
                     globalws,
                     null,
                     null,
-                    event);
+                    eventOut);
             checkCLError(errcode);
 
-            CL10.clWaitForEvents(event);
+            clWaitForEvents(eventOut);
+            long eventAddr = eventOut.get(0);
+            InfoUtil.checkCLError(clReleaseEvent(eventAddr));
         }
 
         program.clear();
