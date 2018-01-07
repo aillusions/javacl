@@ -92,9 +92,9 @@ public class Main {
         PointerBuffer invws = BufferUtils.createPointerBuffer(1);
         invws.put(0, (ncols * nrows) / invsize); // 20480 ?
 
-        long kernel_0 = initKernel0(usDev, program, errcode_ret).getKernel();
-        long kernel_1 = initKernel1(usDev, program, errcode_ret).getKernel();
-        long kernel_2 = initKernel2(usDev, program, errcode_ret).getKernel();
+        WindUpKernel kernel_0 = initKernel0(usDev, program, errcode_ret);
+        WindUpKernel kernel_1 = initKernel1(usDev, program, errcode_ret);
+        WindUpKernel kernel_2 = initKernel2(usDev, program, errcode_ret);
 
         /*
             Mac:
@@ -111,19 +111,19 @@ public class Main {
          */
         {
             long start = System.currentTimeMillis();
-            enqueueAndWait(clQueue, kernel_0, 2, globalws);
+            enqueueAndWait(clQueue, kernel_0.getKernel(), 2, globalws);
             System.out.println("kernel_0: " + (System.currentTimeMillis() - start) + " ms.");
         }
 
         {
             long start = System.currentTimeMillis();
-            enqueueAndWait(clQueue, kernel_1, 1, invws);
+            enqueueAndWait(clQueue, kernel_1.getKernel(), 1, invws);
             System.out.println("kernel_1: " + (System.currentTimeMillis() - start) + " ms.");
         }
 
         {
             long start = System.currentTimeMillis();
-            enqueueAndWait(clQueue, kernel_2, 2, globalws);
+            enqueueAndWait(clQueue, kernel_2.getKernel(), 2, globalws);
             System.out.println("kernel_2: " + (System.currentTimeMillis() - start) + " ms.");
         }
 
@@ -172,6 +172,7 @@ public class Main {
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
             mem_list.put(0, points_out);
             clSetKernelArg(clKernel, argIdx, mem_list);
+            buffers[argIdx] = points_out;
         }
 
         {
@@ -182,6 +183,7 @@ public class Main {
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
             mem_list.put(0, z_heap);
             clSetKernelArg(clKernel, argIdx, mem_list);
+            buffers[argIdx] = z_heap;
         }
 
         {
@@ -192,6 +194,7 @@ public class Main {
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
             mem_list.put(0, row_in);
             clSetKernelArg(clKernel, argIdx, mem_list);
+            buffers[argIdx] = row_in;
         }
 
         {
@@ -202,6 +205,7 @@ public class Main {
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
             mem_list.put(0, col_in);
             clSetKernelArg(clKernel, argIdx, mem_list);
+            buffers[argIdx] = col_in;
         }
 
         return new WindUpKernel(clKernel, buffers);
@@ -225,12 +229,14 @@ public class Main {
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
             mem_list.put(0, z_heap);
             clSetKernelArg(clKernel, argIdx, mem_list);
+            buffers[argIdx] = z_heap;
         }
 
         {
             int argIdx = 1;
             int batch = 256;
             clSetKernelArg1i(clKernel, argIdx, batch);
+            buffers[argIdx] = batch;
         }
 
         return new WindUpKernel(clKernel, buffers);
@@ -250,6 +256,7 @@ public class Main {
             int argIdx = 0;
             PointerBuffer found = BufferUtils.createPointerBuffer(1);
             clSetKernelArg(clKernel, argIdx, found);
+            buffers[argIdx] = found.get(0);
         }
 
         {
@@ -260,6 +267,7 @@ public class Main {
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
             mem_list.put(0, points_in);
             clSetKernelArg(clKernel, argIdx, mem_list);
+            buffers[argIdx] = points_in;
         }
 
         {
@@ -270,6 +278,7 @@ public class Main {
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
             mem_list.put(0, z_heap);
             clSetKernelArg(clKernel, argIdx, mem_list);
+            buffers[argIdx] = z_heap;
         }
 
         {
@@ -280,12 +289,14 @@ public class Main {
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
             mem_list.put(0, target_table);
             clSetKernelArg(clKernel, argIdx, mem_list);
+            buffers[argIdx] = target_table;
         }
 
         {
             int argIdx = 4;
             int ntargets = patNum;
             clSetKernelArg1i(clKernel, argIdx, ntargets);
+            buffers[argIdx] = ntargets;
         }
 
         return new WindUpKernel(clKernel, buffers);
