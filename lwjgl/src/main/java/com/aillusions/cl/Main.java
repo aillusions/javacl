@@ -94,6 +94,13 @@ public class Main {
                 kernel_1: 70 ms.
                 kernel_2: 1000 ms.
          */
+
+        /*
+            PC:
+                kernel_0: 50 ms.
+                kernel_1: 20 ms.
+                kernel_2: 70 ms.
+         */
         {
             long start = System.currentTimeMillis();
             enqueueAndWait(clQueue, kernel_0, 2, globalws);
