@@ -46,7 +46,14 @@ public class Main {
         return (((x) + ((a) - 1)) & ~((a) - 1));
     }
 
-    static int patNum = 2;
+    /*
+        available on the device:
+            Mac: 2130706432 bytes (2Gb)
+    */
+
+    static int patNum = 35_000_000; // Mac
+    //static int patNum = 900_000_000; // PC ?
+
     static int nrows = 2048;
     static int ncols = 2560;
     static int round = nrows * ncols;
