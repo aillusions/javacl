@@ -129,7 +129,8 @@ public class Main {
 
         int errcode = clEnqueueNDRangeKernel(
                 clQueue,
-                kernel, dimm,
+                kernel,
+                dimm,
                 null,
                 ws,
                 null,
@@ -260,7 +261,8 @@ public class Main {
             clSetKernelArg(clKernel, 3, mem_list);
         }
 
-        clSetKernelArg1i(clKernel, 4, 1);
+        int ntargets = patNum;
+        clSetKernelArg1i(clKernel, 4, ntargets);
 
         return clKernel;
     }
