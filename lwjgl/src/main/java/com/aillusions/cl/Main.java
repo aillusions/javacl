@@ -102,6 +102,7 @@ public class Main {
                     eventOut);
             checkCLError(errcode);
 
+            eventOut.rewind();
             clWaitForEvents(eventOut);
             long eventAddr = eventOut.get(0);
             InfoUtil.checkCLError(clReleaseEvent(eventAddr));
@@ -119,6 +120,7 @@ public class Main {
                     eventOut);
             checkCLError(errcode);
 
+            eventOut.rewind();
             clWaitForEvents(eventOut);
             long eventAddr = eventOut.get(0);
             InfoUtil.checkCLError(clReleaseEvent(eventAddr));
@@ -128,7 +130,7 @@ public class Main {
             int errcode = clEnqueueNDRangeKernel(
                     clQueue,
                     kernel_2,
-                    1,
+                    2,
                     null,
                     globalws,
                     null,
@@ -136,6 +138,7 @@ public class Main {
                     eventOut);
             checkCLError(errcode);
 
+            eventOut.rewind();
             clWaitForEvents(eventOut);
             long eventAddr = eventOut.get(0);
             InfoUtil.checkCLError(clReleaseEvent(eventAddr));
