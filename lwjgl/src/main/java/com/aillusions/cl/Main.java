@@ -121,7 +121,8 @@ public class Main {
 
         PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
 
-        ByteBuffer mapped_ptr = BufferUtils.createByteBuffer(target_table_buff_size);
+        //ByteBuffer mapped_ptr = BufferUtils.createByteBuffer(target_table_buff_size);
+        ByteBuffer mapped_ptr = stack.malloc(target_table_buff_size);
 
         int ret = clEnqueueUnmapMemObject(
                 clQueue,
