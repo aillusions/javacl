@@ -105,7 +105,7 @@ public class Main {
         WindUpKernel kernel_1 = initKernel1(usDev, program, errcode_ret);
         WindUpKernel kernel_2 = initKernel2(usDev, program, errcode_ret);
 
-        clEnqueueMapBuffer(
+        ByteBuffer mappedBuffer = clEnqueueMapBuffer(
                 clQueue,
                 kernel_2.getBuffers()[3],
                 true,
@@ -121,16 +121,10 @@ public class Main {
 
         PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
 
-        //ByteBuffer mapped_ptr = BufferUtils.createByteBuffer(target_table_buff_size);
-        ByteBuffer mapped_ptr = stack.malloc(target_table_buff_size);
-        for (int i = 0; i < mapped_ptr.capacity(); i++) {
-            mapped_ptr.put(i, (byte) i);
-        }
-
         int ret = clEnqueueUnmapMemObject(
                 clQueue,
                 kernel_2.getBuffers()[3],
-                mapped_ptr,
+                mappedBuffer,
                 null,
                 eventOut
         );
@@ -359,3 +353,9 @@ public class Main {
 //ByteBuffer col_in = BufferUtils.createByteBuffer();
 //clRetainMemObject(col_in);
 //clSetKernelArg(clKernel, 3, col_in);
+
+//ByteBuffer mapped_ptr = BufferUtils.createByteBuffer(target_table_buff_size);
+/*ByteBuffer mapped_ptr = stack.malloc(target_table_buff_size);
+for (int i = 0; i < mapped_ptr.capacity(); i++) {
+    mapped_ptr.put(i, (byte) i);
+}*/
