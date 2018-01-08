@@ -7,11 +7,15 @@ import com.aillusions.cl.kernel.WindUpKernel;
 import com.aillusions.cl.programm.LoadedProgram;
 import com.aillusions.cl.programm.ProgramLoader;
 import org.bitcoinj.core.Address;
+import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.params.MainNetParams;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
+import org.spongycastle.crypto.params.ECDomainParameters;
+import org.spongycastle.math.ec.ECCurve;
+import org.spongycastle.math.ec.ECPoint;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -72,6 +76,10 @@ public class Main {
         System.out.println("Total patterns: " + patterns.size());
     }
 
+
+    static final int ACCESS_BUNDLE = 1024;
+    static final int ACCESS_STRIDE = ACCESS_BUNDLE / 8;
+
     static final int hash160bytes = 20;
     static int patNum = patterns.size();
 
@@ -81,6 +89,9 @@ public class Main {
     static int nrows = 2048;
     static int ncols = 2560;
     static int round = nrows * ncols;
+
+    static final int nrows_SUM_ncols = nrows + ncols;
+
     static int z_heap_and_point_spaces = round_up_pow2(32 * 2 * round, 4096); // 335544320
     static int row_in_size = round_up_pow2(32 * 2 * ncols, 4096); // 163840
 
@@ -135,6 +146,8 @@ public class Main {
         setResultInitial(clQueue, kernel_2, errcode_ret);
 
         setPatterns(clQueue, kernel_2, errcode_ret);
+
+        fillSeqPoints(clQueue, kernel_0, errcode_ret);
 
         {
             long start = System.currentTimeMillis();
@@ -218,8 +231,6 @@ public class Main {
         );
         checkCLError(errcode_ret);
 
-        // TODO populate patterns table here
-
         for (String pattern : patterns) {
             byte has160[] = getRipemd160(pattern);
             for (byte b : has160) {
@@ -243,6 +254,44 @@ public class Main {
         clReleaseEvent(eventOut.get());
 
         System.out.println("setPatterns: done.");
+    }
+
+    /* Fill the sequential point array */
+    public static void fillSeqPoints(long clQueue, WindUpKernel kernel_0, IntBuffer errcode_ret) {
+
+        {
+            ECDomainParameters ecp = ECKey.CURVE;
+            ECCurve curve = ecp.getCurve();
+            ECPoint pGenConst = ecp.getG();
+            ECKey pRandKey = new ECKey();
+
+            /* Build the base array of sequential points */
+
+            ECPoint[] ppbase = new ECPoint[nrows_SUM_ncols];
+            ppbase[0] = pRandKey.getPubKeyPoint();
+
+            for (int i = 1; i < ncols; i++) {
+                ppbase[i] = pGenConst.add(ppbase[i - 1]);
+            }
+
+            curve.normalizeAll(ppbase);
+        }
+
+        long bufferArg = kernel_0.getBuffers()[2];
+
+        ByteBuffer ocl_points_in = clEnqueueMapBuffer(
+                clQueue,
+                bufferArg,
+                true,
+                CL_MAP_WRITE,
+                0L,
+                row_in_size,
+                null,
+                null,
+                errcode_ret,
+                null
+        );
+        checkCLError(errcode_ret);
     }
 
     public static boolean checkResult(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
@@ -518,3 +567,21 @@ public class Main {
 for (int i = 0; i < mapped_ptr.capacity(); i++) {
     mapped_ptr.put(i, (byte) i);
 }*/
+
+/*
+
+      X9ECParameters ecSpec = SECNamedCurves.getByName("secp256k1");
+        ECCurve.Fp eccurve = (ECCurve.Fp) ecSpec.getCurve();
+        ECPoint G = ecSpec.getG();
+        ECKey.CURVE.getN();
+        ECCurve curveFromKey = pRandKey.getPubKeyPoint().getCurve(); // pgroup
+        ECPoint gFromKey = ECKey.CURVE.getG(); // pgen
+
+        //curveFromKey.
+
+        // The private key is simply a BIGNUM, see BN_new(3).
+        BigInteger privKey = pRandKey.getPrivKey();
+
+        // The public key is a point on a curve represented by an EC_POINT
+        ECPoint ecPoint = pRandKey.getPubKeyPoint();
+        ECCurve ecCurve = ecPoint.getCurve();*/
