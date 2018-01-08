@@ -177,6 +177,7 @@ public class Main {
         for (int i = 0; i < response_buff_size; i++) {
             ocl_found_out.put((byte) i);
         }
+        ocl_found_out.rewind();
 
         PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
 
@@ -219,6 +220,8 @@ public class Main {
                 ocl_targets_in.put(b);
             }
         }
+
+        ocl_targets_in.rewind();
 
         PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
         int ret = clEnqueueUnmapMemObject(
