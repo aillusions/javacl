@@ -121,10 +121,10 @@ public class Main {
         /* Set the found indicator for each slot -1 */
         {
 
-            long buffer = kernel_2.getBuffers()[0];
+            long bufferArg = kernel_2.getBuffers()[0];
             ByteBuffer ocl_found_out = clEnqueueMapBuffer(
                     clQueue,
-                    buffer,
+                    bufferArg,
                     true,
                     CL_MAP_WRITE,
                     0L,
@@ -144,7 +144,7 @@ public class Main {
 
             int ret = clEnqueueUnmapMemObject(
                     clQueue,
-                    buffer,
+                    bufferArg,
                     ocl_found_out,
                     null,
                     eventOut
@@ -156,9 +156,12 @@ public class Main {
         }
 
         {   /* Write range records */
+
+            long bufferArg = kernel_2.getBuffers()[3];
+
             ByteBuffer ocl_targets_in = clEnqueueMapBuffer(
                     clQueue,
-                    kernel_2.getBuffers()[3],
+                    bufferArg,
                     true,
                     CL_MAP_WRITE,
                     0L,
@@ -179,14 +182,10 @@ public class Main {
                 }
             }
 
-            //for (int i = 0; i < target_table_buff_size; i++) {
-            //    ocl_targets_in.put((byte) i);
-            //}
-
             PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
             int ret = clEnqueueUnmapMemObject(
                     clQueue,
-                    kernel_2.getBuffers()[3],
+                    bufferArg,
                     ocl_targets_in,
                     null,
                     eventOut
