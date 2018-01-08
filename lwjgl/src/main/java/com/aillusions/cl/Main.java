@@ -37,17 +37,7 @@ public class Main {
 
     private static final String calc_addr_file = getFileNamePath("calc_addrs");
 
-    private static final int n = 10;
-
-    private static final float anArray[] = new float[n];
-
-    static {
-        for (int i = 0; i < n; i++) {
-            anArray[i] = i;
-        }
-    }
-
-    /*public static boolean is_pow2(int v) {
+   /*public static boolean is_pow2(int v) {
         return !(v & (v - 1));
     }*/
 
@@ -60,20 +50,28 @@ public class Main {
             Mac: 2130706432 bytes (2Gb)
     */
 
-    // Real addresses
-    public static List<String> patterns = new LinkedList<>(Arrays.asList(
-            "18iBkXFP5Ep7utstCkJYSUtXLUA49QbD5Q", // 84910071079903469711540322182995519010752598753241787550350295165653577042301
+    public static final List<String> real_patterns = Arrays.asList("18iBkXFP5Ep7utstCkJYSUtXLUA49QbD5Q", // 84910071079903469711540322182995519010752598753241787550350295165653577042301
             "12NEsPS2tPhjXJHd3kGkTvQ7ECGypuxbeo", // 85373582762808404920801888792437094602169475096082456154754419692323304989563
-            "1Em6NM1R4ZLPzfSvSapbVrA4CqbJduqg2C") // 86385075817194309241889933189838769976076542292920476979308177169247389148514
-    );
+            "1Em6NM1R4ZLPzfSvSapbVrA4CqbJduqg2C"); // 86385075817194309241889933189838769976076542292920476979308177169247389148514
 
+    // Real addresses
+    public static final List<String> patterns = new LinkedList<>();
 
-    static final int hash160bytes = 20;
-
-    static int patNum = patterns.size();
 
     // static int patNumMax = 35_000_000; // Mac
     // static int patNumMax = 1_400_000_000; // PC
+    static {
+        System.out.println("Composing patterns list: in.") ;
+
+        for (int i = 0; i < 100_000; i++) {
+            patterns.addAll(real_patterns);
+        }
+
+        System.out.println("Total patterns: " + patterns.size());
+    }
+
+    static final int hash160bytes = 20;
+    static int patNum = patterns.size();
 
     static int target_table_buff_size = hash160bytes * patNum;
     static int response_buff_size = 28; //??
@@ -88,7 +86,7 @@ public class Main {
      * kernel_0: 210 ms.
      * kernel_1: 70 ms.
      * kernel_2: 2000 ms.
-     *
+     * <p>
      * PC:
      * kernel_0: 50 ms.
      * kernel_1: 20 ms.
@@ -196,6 +194,9 @@ public class Main {
 
     /* Write range records */
     public static void setPatterns(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
+
+        System.out.println("setPatterns: in.") ;
+
         long bufferArg = kernel_2.getBuffers()[3];
 
         ByteBuffer ocl_targets_in = clEnqueueMapBuffer(
@@ -235,6 +236,8 @@ public class Main {
 
         clWaitForEvents(eventOut);
         clReleaseEvent(eventOut.get());
+
+        System.out.println("setPatterns: done.") ;
     }
 
     public static boolean checkResult(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
