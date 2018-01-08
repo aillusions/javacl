@@ -6,11 +6,15 @@ import com.aillusions.cl.device.UsefulDevice;
 import com.aillusions.cl.kernel.WindUpKernel;
 import com.aillusions.cl.programm.LoadedProgram;
 import com.aillusions.cl.programm.ProgramLoader;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.params.MainNetParams;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
@@ -62,6 +66,11 @@ public class Main {
     // static int patNumMax = 35_000_000; // Mac
     // static int patNumMax = 1_400_000_000; // PC
 
+    //  Mainline addresses can be 25-34 characters in length. Most addresses are 33 or 34 characters long.
+    // 25-byte binary Bitcoin Address.
+    // 20 bytes -> 40 hex-digits
+    // 4 bytes -> 8 hex-digits
+    // The 160-bit RIPEMD-160 hashes (RIPE message digests) are typically represented as 40-digit hexadecimal numbers.
     static int target_table_buff_size = 40 * patNum;
 
     static int nrows = 2048;
@@ -391,6 +400,13 @@ public class Main {
         }
 
         return new WindUpKernel(clKernel, buffers);
+    }
+
+    public static String getRipemd160(String base58Address) {
+        final NetworkParameters netParams = MainNetParams.get();
+        Address addr = Address.fromBase58(netParams, base58Address);
+        byte[] hash160 = addr.getHash160();
+        return new BigInteger(1, hash160).toString(16);
     }
 
 }
