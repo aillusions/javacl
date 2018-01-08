@@ -83,6 +83,17 @@ public class Main {
     static int round = nrows * ncols;
     static int invsize = 256;
 
+    /**
+     * Mac:
+     * kernel_0: 210 ms.
+     * kernel_1: 70 ms.
+     * kernel_2: 2000 ms.
+     *
+     * PC:
+     * kernel_0: 50 ms.
+     * kernel_1: 20 ms.
+     * kernel_2: 70 ms.
+     */
     public static void main(String... arg) throws IOException {
 
         MemoryStack stack = stackPush();
@@ -122,19 +133,6 @@ public class Main {
 
         setPatterns(clQueue, kernel_2, errcode_ret);
 
-        /*
-            Mac:
-                kernel_0: 210 ms.
-                kernel_1: 70 ms.
-                kernel_2: 2000 ms.
-         */
-
-        /*
-            PC:
-                kernel_0: 50 ms.
-                kernel_1: 20 ms.
-                kernel_2: 70 ms.
-         */
         {
             long start = System.currentTimeMillis();
             enqueueAndWait(clQueue, kernel_0.getKernel(), 2, globalws);
