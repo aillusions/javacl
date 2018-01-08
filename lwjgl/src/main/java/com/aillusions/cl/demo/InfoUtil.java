@@ -130,7 +130,7 @@ public final class InfoUtil {
 
     public static void checkCLError(int errcode) {
         if (errcode != CL_SUCCESS) {
-            throw new RuntimeException(String.format("OpenCL error [0x%X]", errcode));
+            throw new RuntimeException(String.format("OpenCL error [0x%X]", errcode) + "(" + errcode + ")");
         }
     }
 
