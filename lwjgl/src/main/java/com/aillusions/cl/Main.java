@@ -69,7 +69,7 @@ public class Main {
     static {
         System.out.println("Composing patterns list: in.");
 
-        for (int i = 0; i < 100_000; i++) {
+        for (int i = 0; i < 1; i++) {
             patterns.addAll(real_patterns);
         }
 
@@ -259,6 +259,8 @@ public class Main {
     /* Fill the sequential point array */
     public static void fillSeqPoints(long clQueue, WindUpKernel kernel_0, IntBuffer errcode_ret) {
 
+        ECPoint[] ppbase = new ECPoint[nrows_SUM_ncols];
+
         {
             ECDomainParameters ecp = ECKey.CURVE;
             ECCurve curve = ecp.getCurve();
@@ -267,7 +269,6 @@ public class Main {
 
             /* Build the base array of sequential points */
 
-            ECPoint[] ppbase = new ECPoint[nrows_SUM_ncols];
             ppbase[0] = pRandKey.getPubKeyPoint();
 
             for (int i = 1; i < ncols; i++) {
@@ -292,6 +293,46 @@ public class Main {
                 null
         );
         checkCLError(errcode_ret);
+
+        for (int i = 0; i < ncols; i++) {
+            vg_ocl_put_point_tpa(ocl_points_in, i, ppbase[i]);
+        }
+    }
+
+    static void vg_ocl_put_point_tpa(ByteBuffer buf, int cell, ECPoint ppnt) {
+        int start, i;
+
+        vg_ocl_put_point(buf, ppnt);
+
+        start = ((((2 * cell) / ACCESS_STRIDE) * ACCESS_BUNDLE) + (cell % (ACCESS_STRIDE / 2)));
+
+        for (i = 0; i < 8; i++) {
+            //memcpy(buf + 4 * (start + i * ACCESS_STRIDE), pntbuf + (i * 4), 4);
+        }
+
+        for (i = 0; i < 8; i++) {
+            //memcpy(buf + 4 * (start + (ACCESS_STRIDE / 2) + (i * ACCESS_STRIDE)), pntbuf + 32 + (i * 4), 4);
+        }
+    }
+
+    static void vg_ocl_put_point(ByteBuffer buf, ECPoint ppnt) {
+        assert (ppnt.isNormalized());
+        vg_ocl_put_bignum_raw(buf, ppnt.getAffineXCoord().toBigInteger());
+        vg_ocl_put_bignum_raw(buf, ppnt.getAffineYCoord().toBigInteger());
+    }
+
+    static void vg_ocl_put_bignum_raw(ByteBuffer buf, BigInteger bn) {
+        byte[] bytes = bn.toByteArray();
+        int bnlen = bytes.length;
+
+        // System.out.println("vg_ocl_put_bignum_raw: adding: " + bnlen + " bytes.");
+
+        if (bnlen >= 32) {
+            buf.put(bytes, 0, 32);
+        } else {
+            buf.put(bytes, 0, bnlen);
+            buf.put(new byte[32 - bnlen]);
+        }
     }
 
     public static boolean checkResult(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
