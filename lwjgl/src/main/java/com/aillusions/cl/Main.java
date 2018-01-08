@@ -67,12 +67,16 @@ public class Main {
             "1Em6NM1R4ZLPzfSvSapbVrA4CqbJduqg2C") // 86385075817194309241889933189838769976076542292920476979308177169247389148514
     );
 
+
+    static final int hash160bytes = 20;
+
     static int patNum = patterns.size();
 
     // static int patNumMax = 35_000_000; // Mac
     // static int patNumMax = 1_400_000_000; // PC
 
-    static int target_table_buff_size = 20 * patNum;
+    static int target_table_buff_size = hash160bytes * patNum;
+    static int response_buff_size = hash160bytes + 8;
 
     static int nrows = 2048;
     static int ncols = 2560;
@@ -124,15 +128,17 @@ public class Main {
                     true,
                     CL_MAP_WRITE,
                     0L,
-                    28, //
+                    response_buff_size ,
                     null,
                     null,
                     errcode_ret,
                     null
             );
             checkCLError(errcode_ret);
-            //ocl_found_out.put(0, (byte) -1); //ocl_found_out[0] = 0xffffffff; ??
-            ocl_found_out.put(ByteBuffer.allocate(28));
+
+            for (int i = 0; i < response_buff_size; i++) {
+                ocl_found_out.put((byte) 0);
+            }
 
             PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
 
@@ -354,7 +360,7 @@ public class Main {
 
         {
             int argIdx = 0;
-            int sizeof = 28;
+            int sizeof = response_buff_size;
             long found = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof, errcode_ret);
             clRetainMemObject(found);
             PointerBuffer mem_list = BufferUtils.createPointerBuffer(1);
