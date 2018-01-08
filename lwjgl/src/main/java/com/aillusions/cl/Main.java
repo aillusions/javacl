@@ -81,6 +81,9 @@ public class Main {
     static int nrows = 2048;
     static int ncols = 2560;
     static int round = nrows * ncols;
+    static int z_heap_and_point_spaces = round_up_pow2(32 * 2 * round, 4096); // 335544320
+    static int row_in_size = round_up_pow2(32 * 2 * ncols, 4096); // 163840
+
     static int invsize = 256;
 
     /**
@@ -316,7 +319,7 @@ public class Main {
 
         {
             int argIdx = 0;
-            int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
+            int sizeof = z_heap_and_point_spaces;
             long points_out = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
             checkCLError(errcode_ret);
 
@@ -330,7 +333,7 @@ public class Main {
 
         {
             int argIdx = 1;
-            int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
+            int sizeof = z_heap_and_point_spaces;
             long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
             checkCLError(errcode_ret);
 
@@ -344,7 +347,7 @@ public class Main {
 
         {
             int argIdx = 2;
-            int sizeof = round_up_pow2(32 * 2 * ncols, 4096); // 163840 ?
+            int sizeof = row_in_size;
             long row_in = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR, sizeof, errcode_ret);
             checkCLError(errcode_ret);
 
@@ -385,7 +388,7 @@ public class Main {
 
         {
             int argIdx = 0;
-            int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
+            int sizeof = z_heap_and_point_spaces;
             long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
             checkCLError(errcode_ret);
 
@@ -433,7 +436,7 @@ public class Main {
 
         {
             int argIdx = 1;
-            int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
+            int sizeof = z_heap_and_point_spaces;
             long points_in = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
             checkCLError(errcode_ret);
 
@@ -447,7 +450,7 @@ public class Main {
 
         {
             int argIdx = 2;
-            int sizeof = round_up_pow2(32 * 2 * round, 4096); // 335544320 ?
+            int sizeof = z_heap_and_point_spaces;
             long z_heap = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
             checkCLError(errcode_ret);
 
