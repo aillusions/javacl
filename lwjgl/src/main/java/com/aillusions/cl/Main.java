@@ -104,7 +104,7 @@ public class Main {
         WindUpKernel kernel_1 = initKernel1(usDev, program, errcode_ret);
         WindUpKernel kernel_2 = initKernel2(usDev, program, errcode_ret);
 
-        // found indicator
+        /* Set the found indicator for each slot -1 */
         {
 
             long buffer = kernel_2.getBuffers()[0];
@@ -139,14 +139,14 @@ public class Main {
             clReleaseEvent(eventOut.get());
         }
 
-        {
-            ByteBuffer mappedBuffer = clEnqueueMapBuffer(
+        {   /* Write range records */
+            ByteBuffer ocl_targets_in = clEnqueueMapBuffer(
                     clQueue,
                     kernel_2.getBuffers()[3],
                     true,
                     CL_MAP_WRITE,
                     0L,
-                    target_table_buff_size,
+                    target_table_buff_size, // the size in bytes of the region in the buffer object that is being mapped
                     null,
                     null,
                     errcode_ret,
@@ -154,12 +154,13 @@ public class Main {
             );
             checkCLError(errcode_ret);
 
-            PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
+            // TODO populate patterns table here
 
+            PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
             int ret = clEnqueueUnmapMemObject(
                     clQueue,
                     kernel_2.getBuffers()[3],
-                    mappedBuffer,
+                    ocl_targets_in,
                     null,
                     eventOut
             );
@@ -366,7 +367,7 @@ public class Main {
             checkCLError(errcode_ret);
         }
 
-        {
+        {/* (re)allocate target buffer */
             int argIdx = 3;
             int sizeof = target_table_buff_size;
             long target_table = clCreateBuffer(usDev.getContext(), CL_MEM_READ_WRITE, sizeof, errcode_ret);
