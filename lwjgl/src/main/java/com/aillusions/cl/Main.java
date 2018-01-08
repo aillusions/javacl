@@ -76,7 +76,7 @@ public class Main {
     // static int patNumMax = 1_400_000_000; // PC
 
     static int target_table_buff_size = hash160bytes * patNum;
-    static int response_buff_size = hash160bytes + 8;
+    static int response_buff_size = 28; //??
 
     static int nrows = 2048;
     static int ncols = 2560;
@@ -118,83 +118,9 @@ public class Main {
         WindUpKernel kernel_1 = initKernel1(usDev, program, errcode_ret);
         WindUpKernel kernel_2 = initKernel2(usDev, program, errcode_ret);
 
-        /* Set the found indicator for each slot -1 */
-        {
+        setResultInitial(clQueue, kernel_2, errcode_ret);
 
-            long bufferArg = kernel_2.getBuffers()[0];
-            ByteBuffer ocl_found_out = clEnqueueMapBuffer(
-                    clQueue,
-                    bufferArg,
-                    true,
-                    CL_MAP_WRITE,
-                    0L,
-                    response_buff_size,
-                    null,
-                    null,
-                    errcode_ret,
-                    null
-            );
-            checkCLError(errcode_ret);
-
-            for (int i = 0; i < response_buff_size; i++) {
-                ocl_found_out.put((byte) 0);
-            }
-
-            PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
-
-            int ret = clEnqueueUnmapMemObject(
-                    clQueue,
-                    bufferArg,
-                    ocl_found_out,
-                    null,
-                    eventOut
-            );
-            checkCLError(ret);
-
-            clWaitForEvents(eventOut);
-            clReleaseEvent(eventOut.get());
-        }
-
-        {   /* Write range records */
-
-            long bufferArg = kernel_2.getBuffers()[3];
-
-            ByteBuffer ocl_targets_in = clEnqueueMapBuffer(
-                    clQueue,
-                    bufferArg,
-                    true,
-                    CL_MAP_WRITE,
-                    0L,
-                    target_table_buff_size, // the size in bytes of the region in the buffer object that is being mapped
-                    null,
-                    null,
-                    errcode_ret,
-                    null
-            );
-            checkCLError(errcode_ret);
-
-            // TODO populate patterns table here
-
-            for (String pattern : patterns) {
-                byte has160[] = getRipemd160(pattern);
-                for (byte b : has160) {
-                    ocl_targets_in.put(b);
-                }
-            }
-
-            PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
-            int ret = clEnqueueUnmapMemObject(
-                    clQueue,
-                    bufferArg,
-                    ocl_targets_in,
-                    null,
-                    eventOut
-            );
-            checkCLError(ret);
-
-            clWaitForEvents(eventOut);
-            clReleaseEvent(eventOut.get());
-        }
+        setPatterns(clQueue, kernel_2, errcode_ret);
 
         /*
             Mac:
@@ -227,8 +153,126 @@ public class Main {
             System.out.println("kernel_2: " + (System.currentTimeMillis() - start) + " ms.");
         }
 
+        checkResult(clQueue, kernel_2, errcode_ret);
+
         program.clear();
         usDev.clear();
+    }
+
+    /* Set the found indicator for each slot -1 */
+    public static void setResultInitial(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
+        long bufferArg = kernel_2.getBuffers()[0];
+        ByteBuffer ocl_found_out = clEnqueueMapBuffer(
+                clQueue,
+                bufferArg,
+                true,
+                CL_MAP_WRITE,
+                0L,
+                response_buff_size,
+                null,
+                null,
+                errcode_ret,
+                null
+        );
+        checkCLError(errcode_ret);
+
+        for (int i = 0; i < response_buff_size; i++) {
+            ocl_found_out.put((byte) i);
+        }
+
+        PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
+
+        int ret = clEnqueueUnmapMemObject(
+                clQueue,
+                bufferArg,
+                ocl_found_out,
+                null,
+                eventOut
+        );
+        checkCLError(ret);
+
+        clWaitForEvents(eventOut);
+        clReleaseEvent(eventOut.get());
+    }
+
+    /* Write range records */
+    public static void setPatterns(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
+        long bufferArg = kernel_2.getBuffers()[3];
+
+        ByteBuffer ocl_targets_in = clEnqueueMapBuffer(
+                clQueue,
+                bufferArg,
+                true,
+                CL_MAP_WRITE,
+                0L,
+                target_table_buff_size, // the size in bytes of the region in the buffer object that is being mapped
+                null,
+                null,
+                errcode_ret,
+                null
+        );
+        checkCLError(errcode_ret);
+
+        // TODO populate patterns table here
+
+        for (String pattern : patterns) {
+            byte has160[] = getRipemd160(pattern);
+            for (byte b : has160) {
+                ocl_targets_in.put(b);
+            }
+        }
+
+        PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
+        int ret = clEnqueueUnmapMemObject(
+                clQueue,
+                bufferArg,
+                ocl_targets_in,
+                null,
+                eventOut
+        );
+        checkCLError(ret);
+
+        clWaitForEvents(eventOut);
+        clReleaseEvent(eventOut.get());
+    }
+
+    public static boolean checkResult(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
+        long bufferArg = kernel_2.getBuffers()[0];
+
+        ByteBuffer ocl_found_out = clEnqueueMapBuffer(
+                clQueue,
+                bufferArg,
+                true,
+                CL_MAP_READ | CL_MAP_WRITE,
+                0L,
+                response_buff_size,
+                null,
+                null,
+                errcode_ret,
+                null
+        );
+        checkCLError(errcode_ret);
+
+        byte[] bytes = new byte[response_buff_size];
+        for (int i = 0; i < response_buff_size; i++) {
+            bytes[i] = ocl_found_out.get(i);
+        }
+
+        PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
+
+        int ret = clEnqueueUnmapMemObject(
+                clQueue,
+                bufferArg,
+                ocl_found_out,
+                null,
+                eventOut
+        );
+        checkCLError(ret);
+
+        clWaitForEvents(eventOut);
+        clReleaseEvent(eventOut.get());
+
+        return false;
     }
 
     public static void enqueueAndWait(long clQueue, long kernel, int dimm, PointerBuffer ws) {
@@ -449,6 +493,9 @@ public class Main {
     public static String Ripemd160ToString(byte[] hash160) {
         return new BigInteger(1, hash160).toString(16);
     }
+
+    // Private key hexadecimal - 256 bits in hexadecimal is 32 bytes
+    // Specifically, any 256-bit number from 0x1 to 0xFFFF FFFF FFFF FFFF FFFF FFFF FFFF FFFE BAAE DCE6 AF48 A03B BFD2 5E8C D036 4140 is a valid private key.
 
 }
 
