@@ -60,7 +60,13 @@ public class Main {
             Mac: 2130706432 bytes (2Gb)
     */
 
-    public static List<String> patterns = new LinkedList<>(Arrays.asList("1aaa11", "1aaa22", "1aaa33"));
+    // Real addresses
+    public static List<String> patterns = new LinkedList<>(Arrays.asList(
+            "18iBkXFP5Ep7utstCkJYSUtXLUA49QbD5Q", // 84910071079903469711540322182995519010752598753241787550350295165653577042301
+            "12NEsPS2tPhjXJHd3kGkTvQ7ECGypuxbeo", // 85373582762808404920801888792437094602169475096082456154754419692323304989563
+            "1Em6NM1R4ZLPzfSvSapbVrA4CqbJduqg2C") // 86385075817194309241889933189838769976076542292920476979308177169247389148514
+    );
+
     static int patNum = patterns.size();
 
     // static int patNumMax = 35_000_000; // Mac
