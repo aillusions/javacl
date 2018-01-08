@@ -1441,8 +1441,7 @@ __kernel void hash_ec_point_search_prefix(
 		high = (p < 0) ? (i - 1) : high;
 		if (p == 0) {
 			/* For debugging purposes, write the hash value */
-			found[0] = ((get_global_id(1) * get_global_size(0)) +
-				    get_global_id(0));
+			found[0] = ((get_global_id(1) * get_global_size(0)) + get_global_id(0));
 			found[1] = i;
 
 #define hash_ec_point_search_prefix_inner_2(i)	\
