@@ -50,9 +50,11 @@ public class Main {
             Mac: 2130706432 bytes (2Gb)
     */
 
-    public static final List<String> real_patterns = Arrays.asList("18iBkXFP5Ep7utstCkJYSUtXLUA49QbD5Q", // 84910071079903469711540322182995519010752598753241787550350295165653577042301
+    public static final List<String> real_patterns = Arrays.asList(
+            "18iBkXFP5Ep7utstCkJYSUtXLUA49QbD5Q", // 84910071079903469711540322182995519010752598753241787550350295165653577042301
             "12NEsPS2tPhjXJHd3kGkTvQ7ECGypuxbeo", // 85373582762808404920801888792437094602169475096082456154754419692323304989563
-            "1Em6NM1R4ZLPzfSvSapbVrA4CqbJduqg2C"); // 86385075817194309241889933189838769976076542292920476979308177169247389148514
+            "1Em6NM1R4ZLPzfSvSapbVrA4CqbJduqg2C" // 86385075817194309241889933189838769976076542292920476979308177169247389148514
+    );
 
     // Real addresses
     public static final List<String> patterns = new LinkedList<>();
@@ -61,7 +63,7 @@ public class Main {
     // static int patNumMax = 35_000_000; // Mac
     // static int patNumMax = 1_400_000_000; // PC
     static {
-        System.out.println("Composing patterns list: in.") ;
+        System.out.println("Composing patterns list: in.");
 
         for (int i = 0; i < 100_000; i++) {
             patterns.addAll(real_patterns);
@@ -195,7 +197,7 @@ public class Main {
     /* Write range records */
     public static void setPatterns(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
 
-        System.out.println("setPatterns: in.") ;
+        System.out.println("setPatterns: in.");
 
         long bufferArg = kernel_2.getBuffers()[3];
 
@@ -237,7 +239,7 @@ public class Main {
         clWaitForEvents(eventOut);
         clReleaseEvent(eventOut.get());
 
-        System.out.println("setPatterns: done.") ;
+        System.out.println("setPatterns: done.");
     }
 
     public static boolean checkResult(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
