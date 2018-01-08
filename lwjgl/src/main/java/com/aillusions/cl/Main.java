@@ -156,6 +156,10 @@ public class Main {
 
             // TODO populate patterns table here
 
+            for (int i = 0; i < target_table_buff_size; i++) {
+                ocl_targets_in.put((byte) i);
+            }
+
             PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
             int ret = clEnqueueUnmapMemObject(
                     clQueue,
