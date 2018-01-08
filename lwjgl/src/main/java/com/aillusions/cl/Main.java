@@ -72,12 +72,7 @@ public class Main {
     // static int patNumMax = 35_000_000; // Mac
     // static int patNumMax = 1_400_000_000; // PC
 
-    //  Mainline addresses can be 25-34 characters in length. Most addresses are 33 or 34 characters long.
-    // 25-byte binary Bitcoin Address.
-    // 20 bytes -> 40 hex-digits
-    // 4 bytes -> 8 hex-digits
-    // The 160-bit RIPEMD-160 hashes (RIPE message digests) are typically represented as 40-digit hexadecimal numbers.
-    static int target_table_buff_size = 40 * patNum;
+    static int target_table_buff_size = 20 * patNum;
 
     static int nrows = 2048;
     static int ncols = 2560;
@@ -171,9 +166,16 @@ public class Main {
 
             // TODO populate patterns table here
 
-            for (int i = 0; i < target_table_buff_size; i++) {
-                ocl_targets_in.put((byte) i);
+            for (String pattern : patterns) {
+                byte has160[] = getRipemd160(pattern);
+                for (byte b : has160) {
+                    ocl_targets_in.put(b);
+                }
             }
+
+            //for (int i = 0; i < target_table_buff_size; i++) {
+            //    ocl_targets_in.put((byte) i);
+            //}
 
             PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
             int ret = clEnqueueUnmapMemObject(
@@ -408,10 +410,20 @@ public class Main {
         return new WindUpKernel(clKernel, buffers);
     }
 
-    public static String getRipemd160(String base58Address) {
+    //  Mainline addresses can be 25-34 characters in length. Most addresses are 33 or 34 characters long.
+    // 25-byte binary Bitcoin Address.
+    // 20 bytes -> 40 hex-digits
+    // 4 bytes -> 8 hex-digits
+    // The 160-bit RIPEMD-160 hashes (RIPE message digests) are typically represented as 40-digit hexadecimal numbers.
+    public static byte[] getRipemd160(String base58Address) {
         final NetworkParameters netParams = MainNetParams.get();
         Address addr = Address.fromBase58(netParams, base58Address);
         byte[] hash160 = addr.getHash160();
+        return hash160;
+
+    }
+
+    public static String Ripemd160ToString(byte[] hash160) {
         return new BigInteger(1, hash160).toString(16);
     }
 
