@@ -97,6 +97,14 @@ public class Main {
 
     static int invsize = 256;
 
+    static final ECDomainParameters ecp = ECKey.CURVE;
+    static final ECCurve curve = ecp.getCurve();
+    static final ECPoint pGenConst = ecp.getG();
+
+    static final ECPoint[] ppbase = new ECPoint[nrows_SUM_ncols];
+
+    static BigInteger vxc_bntmp;
+
     /**
      * Mac:
      * kernel_0: 210 ms.
@@ -148,6 +156,7 @@ public class Main {
         setPatterns(clQueue, kernel_2, errcode_ret);
 
         fillSeqPoints(clQueue, kernel_0, errcode_ret);
+        rowIncrementTable(clQueue, null, errcode_ret);
 
         {
             long start = System.currentTimeMillis();
@@ -261,12 +270,7 @@ public class Main {
 
         System.out.println("fillSeqPoints: in.");
 
-        ECPoint[] ppbase = new ECPoint[nrows_SUM_ncols];
-
         {
-            ECDomainParameters ecp = ECKey.CURVE;
-            ECCurve curve = ecp.getCurve();
-            ECPoint pGenConst = ecp.getG();
             ECKey pRandKey = new ECKey();
 
             /* Build the base array of sequential points */
@@ -316,6 +320,29 @@ public class Main {
         clReleaseEvent(eventOut.get());
 
         System.out.println("fillSeqPoints: done.");
+    }
+
+    /* row increment table. */
+    public static void rowIncrementTable(long clQueue, WindUpKernel kernel, IntBuffer errcode_ret) {
+        int idxFrom = ncols;
+
+        vxc_bntmp = BigInteger.valueOf(ncols);
+
+        ECPoint pGenConstCopy = curve.createPoint(pGenConst.getAffineXCoord().toBigInteger(), pGenConst.getAffineYCoord().toBigInteger());
+
+        ECPoint pBatchInc = pGenConst.multiply(vxc_bntmp);
+        pBatchInc.normalize();
+
+        vxc_bntmp = BigInteger.valueOf(round);
+        ECPoint pOffset = pGenConst.multiply(vxc_bntmp);
+        pOffset.normalize();
+
+        ppbase[idxFrom] = pGenConstCopy;
+        for (int i = 1; i < nrows; i++) {
+            ppbase[idxFrom + i] = pBatchInc.add(ppbase[idxFrom + i - 1]);
+        }
+
+        curve.normalizeAll(ppbase);
     }
 
     static void vg_ocl_put_point_tpa(ByteBuffer buf, int cell, ECPoint ppnt) {
