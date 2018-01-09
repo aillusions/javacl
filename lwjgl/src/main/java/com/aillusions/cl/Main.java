@@ -88,7 +88,7 @@ public class Main {
 
     static int nrows = 2048;
     static int ncols = 2560;
-    static int round = nrows * ncols;
+    static int round = nrows * ncols; // 5242880
 
     static final int nrows_SUM_ncols = nrows + ncols;
 
@@ -100,10 +100,25 @@ public class Main {
     static final ECDomainParameters ecp = ECKey.CURVE;
     static final ECCurve curve = ecp.getCurve();
     static final ECPoint pGenConst = ecp.getG();
+    static ECPoint pGenConstCopy = curve.createPoint(pGenConst.getAffineXCoord().toBigInteger(), pGenConst.getAffineYCoord().toBigInteger());
+
+    static ECPoint pBatchInc;
+    static ECPoint pOffset;
+
+    static BigInteger vxc_bntmp;
+
+    static {
+        vxc_bntmp = BigInteger.valueOf(ncols);
+        pBatchInc = pGenConst.multiply(vxc_bntmp);
+        pBatchInc.normalize();
+
+        vxc_bntmp = BigInteger.valueOf(round);
+        pOffset = pGenConst.multiply(vxc_bntmp);
+        pOffset.normalize();
+    }
 
     static final ECPoint[] ppbase = new ECPoint[nrows_SUM_ncols];
 
-    static BigInteger vxc_bntmp;
 
     /**
      * Mac:
@@ -156,7 +171,7 @@ public class Main {
         setPatterns(clQueue, kernel_2, errcode_ret);
 
         fillSeqPoints(clQueue, kernel_0, errcode_ret);
-        rowIncrementTable(clQueue, null, errcode_ret);
+        rowIncrementTable();
 
         {
             long start = System.currentTimeMillis();
@@ -176,7 +191,7 @@ public class Main {
             System.out.println("kernel_2: " + (System.currentTimeMillis() - start) + " ms.");
         }
 
-        checkResult(clQueue, kernel_2, errcode_ret);
+        // mainLoop(clQueue, kernel_2, errcode_ret);
 
         program.clear();
         usDev.clear();
@@ -323,19 +338,8 @@ public class Main {
     }
 
     /* row increment table. */
-    public static void rowIncrementTable(long clQueue, WindUpKernel kernel, IntBuffer errcode_ret) {
+    public static void rowIncrementTable() {
         int idxFrom = ncols;
-
-        vxc_bntmp = BigInteger.valueOf(ncols);
-
-        ECPoint pGenConstCopy = curve.createPoint(pGenConst.getAffineXCoord().toBigInteger(), pGenConst.getAffineYCoord().toBigInteger());
-
-        ECPoint pBatchInc = pGenConst.multiply(vxc_bntmp);
-        pBatchInc.normalize();
-
-        vxc_bntmp = BigInteger.valueOf(round);
-        ECPoint pOffset = pGenConst.multiply(vxc_bntmp);
-        pOffset.normalize();
 
         ppbase[idxFrom] = pGenConstCopy;
         for (int i = 1; i < nrows; i++) {
@@ -343,6 +347,52 @@ public class Main {
         }
 
         curve.normalizeAll(ppbase);
+    }
+
+    static void mainLoop(long clQueue, WindUpKernel kernel_2, IntBuffer errcode_ret) {
+
+        int rekey_at = 100000000;
+        int npoints = 1;
+        int c = 0;
+
+        boolean slot_busy = false;
+        boolean slot_done = false;
+
+        while (true) {
+            if (slot_done) {
+                boolean rv = checkResult(clQueue, kernel_2, errcode_ret);
+                if (rv) {
+                    System.out.println("Found?");
+                    return;
+                }
+
+                c += round;
+            }
+
+            if ((npoints + round) < rekey_at) {
+                if (npoints > 1) {
+                    /* Move the row increments forward */
+                    for (int i = 0; i < nrows; i++) {
+
+                        int idxFrom = ncols;
+
+                        ppbase[idxFrom] = pGenConstCopy;
+                        for (int j = 1; j < nrows; j++) {
+                            ppbase[idxFrom + j] = pBatchInc.add(ppbase[idxFrom + j - 1]);
+                        }
+
+                        curve.normalizeAll(ppbase);
+                    }
+
+                }
+
+                // TODO Copy the row stride array to the device
+
+                npoints += round;
+            }
+
+            slot_done = true;
+        }
     }
 
     static void vg_ocl_put_point_tpa(ByteBuffer buf, int cell, ECPoint ppnt) {
