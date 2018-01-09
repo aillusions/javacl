@@ -300,18 +300,35 @@ public class Main {
     }
 
     static void vg_ocl_put_point_tpa(ByteBuffer buf, int cell, ECPoint ppnt) {
-        int start, i;
 
-        vg_ocl_put_point(buf, ppnt);
+        //ByteBuffer pntbuf = ByteBuffer.allocate(64);
+        ByteBuffer pntbuf = BufferUtils.createByteBuffer(64);
 
-        start = ((((2 * cell) / ACCESS_STRIDE) * ACCESS_BUNDLE) + (cell % (ACCESS_STRIDE / 2)));
+        vg_ocl_put_point(pntbuf, ppnt);
 
-        for (i = 0; i < 8; i++) {
-            //memcpy(buf + 4 * (start + i * ACCESS_STRIDE), pntbuf + (i * 4), 4);
+        int start = ((((2 * cell) / ACCESS_STRIDE) * ACCESS_BUNDLE) + (cell % (ACCESS_STRIDE / 2)));
+
+        for (int i = 0; i < 8; i++) {
+            int copyToOffset = 4 * (start + i * ACCESS_STRIDE); // 0, 512, 1024, 1536, 2048, 2560, 3072, 3584
+            int copyFromOffset = (i * 4); // 0, 4, 8, 12, 16, 20, 24, 28
+            final int copySize = 4;
+
+            copyBuff(buf, pntbuf, copyToOffset, copyFromOffset, copySize);
         }
 
-        for (i = 0; i < 8; i++) {
-            //memcpy(buf + 4 * (start + (ACCESS_STRIDE / 2) + (i * ACCESS_STRIDE)), pntbuf + 32 + (i * 4), 4);
+        for (int i = 0; i < 8; i++) {
+            int copyToOffset = 4 * (start + (ACCESS_STRIDE / 2) + (i * ACCESS_STRIDE)); // 256, 768, 1280, 1792, 2304, 2816, 3328, 3840, 260, 772, 1284..
+            int copyFromOffset = 32 + (i * 4); // 32, 36, 40, 44, 48, 52, 56, 60, 32, 36, 40 ..
+            final int copySize = 4;
+            copyBuff(buf, pntbuf, copyToOffset, copyFromOffset, copySize);
+        }
+    }
+
+    static void copyBuff(ByteBuffer to, ByteBuffer from, int toOffset, int fromOffset, int length) {
+        for (int i = 0; i < length; i++) {
+            int toIdx = toOffset + i;
+            int fromIdx = fromOffset + i;
+            to.put(toIdx, from.get(fromIdx));
         }
     }
 
@@ -598,6 +615,7 @@ public class Main {
 
 }
 
+//ByteBuffer pntbuf = stack.malloc(64);
 //IntBuffer buffer0 = stack.callocInt(1);
 //ByteBuffer col_in = BufferUtils.createByteBuffer();
 //clRetainMemObject(col_in);
