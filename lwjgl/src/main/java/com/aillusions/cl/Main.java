@@ -259,6 +259,8 @@ public class Main {
     /* Fill the sequential point array */
     public static void fillSeqPoints(long clQueue, WindUpKernel kernel_0, IntBuffer errcode_ret) {
 
+        System.out.println("fillSeqPoints: in.");
+
         ECPoint[] ppbase = new ECPoint[nrows_SUM_ncols];
 
         {
@@ -297,6 +299,23 @@ public class Main {
         for (int i = 0; i < ncols; i++) {
             vg_ocl_put_point_tpa(ocl_points_in, i, ppbase[i]);
         }
+
+        ocl_points_in.rewind();
+
+        PointerBuffer eventOut = BufferUtils.createPointerBuffer(1);
+        int ret = clEnqueueUnmapMemObject(
+                clQueue,
+                bufferArg,
+                ocl_points_in,
+                null,
+                eventOut
+        );
+        checkCLError(ret);
+
+        clWaitForEvents(eventOut);
+        clReleaseEvent(eventOut.get());
+
+        System.out.println("fillSeqPoints: done.");
     }
 
     static void vg_ocl_put_point_tpa(ByteBuffer buf, int cell, ECPoint ppnt) {
